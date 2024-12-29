@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/property_detail/property_detail.dart';
 
 import 'features/favorites/favorites.dart';
 import 'features/messages/message.dart';
@@ -31,14 +32,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _pages,
-        onPageChanged: (index) {
-          setState(() {
-            _bottomNavigationIndex = index;
-          });
-        },
+      // body: PageView(
+      //   controller: _pageController,
+      //   children: _pages,
+      //   onPageChanged: (index) {
+      //     setState(() {
+      //       _bottomNavigationIndex = index;
+      //     });
+      //   },
+      // ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PropertyDetail()),
+            );
+          },
+          child: const Text('Property Detail'),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavigationIndex,
@@ -115,9 +127,24 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 25.0,
             ),
             label: "Profile",
+          ),
+          const BottomNavigationBarItem(
+            activeIcon: HugeIcon(
+              icon: HugeIcons.strokeRoundedUserCircle,
+              color: Colors.red,
+              size: 25.0,
+            ),
+            icon: HugeIcon(
+              icon: HugeIcons.strokeRoundedUserCircle,
+              color: Colors.black,
+              size: 25.0,
+            ),
+            label: "Profile",
+
           )
         ],
       ),
     );
   }
 }
+

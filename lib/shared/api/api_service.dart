@@ -3,14 +3,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "10.0.42.189:8080";
+  //ipconfig
+  final String baseUrl = "172.16.0.16:8080";
 
   ApiService();
 
   Future<Map<String, dynamic>> get(String endpoint,
       {Map<String, dynamic> params = const {},
-      Map<String, String>? headers}) async {
-    var uri = Uri.http(baseUrl, endpoint, params);
+        Map<String, String>? headers}) async {
+    Map<String, String> stringParams =
+    params.map((key, value) => MapEntry(key, value.toString()));
+
+    var uri = Uri.http(baseUrl, endpoint, stringParams);
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
@@ -19,6 +23,8 @@ class ApiService {
       throw Exception("Failed to load data");
     }
   }
+
+
 
   Future<Map<String, dynamic>> post(String endpoint,
       {required Map<String, dynamic> body,
