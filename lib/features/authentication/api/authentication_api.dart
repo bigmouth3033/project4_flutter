@@ -18,7 +18,8 @@ class AuthenticationApi {
 
   Future<CustomResult> loginRequest(Map<String, String> body) async {
     try {
-      var response = await apiService.post("authCM/login", body: body);
+      var response =
+          await apiService.post("authCM/login_by_mobile", body: body);
       var customResult = CustomResult.fromJson(response);
       return customResult;
     } catch (ex) {

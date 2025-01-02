@@ -15,7 +15,7 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         Flexible(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(35),
@@ -38,22 +38,22 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
                       horizontal: 15,
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.search,
                         color: Colors.black,
                         weight: 20,
                         size: 30,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Where to?",
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
@@ -62,13 +62,16 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),
                           ),
-                          Text(
-                            "Any where - any week - any time",
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            softWrap: false,
-                            style:
-                                TextStyle(color: Color.fromARGB(150, 0, 0, 0)),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: const Text(
+                              "Any where - any week - any time",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              softWrap: false,
+                              style: TextStyle(
+                                  color: Color.fromARGB(150, 0, 0, 0)),
+                            ),
                           ),
                         ],
                       ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:project4_flutter/features/profile/widgets/authorize_profile.dart';
 import 'package:project4_flutter/features/profile/widgets/unauthorize_profile.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
+import 'package:project4_flutter/shared/widgets/loading_icon.dart';
 
 import '../../home_screen.dart';
 
@@ -19,9 +21,7 @@ class Profile extends StatelessWidget {
         }
 
         if (state is UserLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const LoadingIcon(size: 60);
         }
 
         if (state is UserSuccess) {
@@ -45,14 +45,3 @@ class Profile extends StatelessWidget {
     );
   }
 }
-// Consumer<UserProvider>(
-// builder: (context, userProvider, child) {
-// if (userProvider.isLoading) {
-// return const Center(child: CircularProgressIndicator());
-// } else if (userProvider.user != null) {
-// return const AuthorizeProfile();
-// } else {
-// return const UnauthorizeProfile();
-// }
-// },
-// )

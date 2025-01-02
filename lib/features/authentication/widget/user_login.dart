@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project4_flutter/features/authentication/api/authentication_api.dart';
 import 'package:project4_flutter/home_screen.dart';
+import 'package:project4_flutter/main.dart';
 import 'package:project4_flutter/shared/api/user_api.dart';
 import 'package:project4_flutter/shared/models/custom_result.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
@@ -51,6 +52,7 @@ class _UserLoginState extends State<UserLogin> {
       var body = <String, String>{};
       body['email'] = widget.email;
       body['password'] = _passwordController.text.toString();
+      body['token'] = fcmToken!;
 
       CustomResult customResult = await authenticationApi.loginRequest(body);
 

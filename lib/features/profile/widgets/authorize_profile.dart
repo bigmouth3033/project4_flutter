@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/main.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 
@@ -511,7 +512,11 @@ class AuthorizeProfile extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: TextButton(
                         onPressed: () {
-                          context.read<UserCubit>().logout();
+                          Map<String, dynamic> body = {
+                            'token': fcmToken,
+                            'userId': user.id
+                          };
+                          context.read<UserCubit>().logout(body);
                         },
                         style: TextButton.styleFrom(
                             padding: const EdgeInsets.all(0)),
