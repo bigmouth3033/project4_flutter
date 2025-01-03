@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project4_flutter/features/messages/bloc/message_cubit/message_room_state.dart';
+import 'package:project4_flutter/shared/bloc/message_room_cubit/message_room_state.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/search_friend_state.dart';
 import 'package:project4_flutter/features/messages/models/room.dart';
 import 'package:project4_flutter/features/messages/models/search_friend_entity.dart';

@@ -6,8 +6,8 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/add_friend_cubit.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/add_group_cubit.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/message_cubit.dart';
-import 'package:project4_flutter/features/messages/bloc/message_cubit/message_room_cubit.dart';
-import 'package:project4_flutter/features/messages/bloc/message_cubit/message_room_state.dart';
+import 'package:project4_flutter/shared/bloc/message_room_cubit/message_room_cubit.dart';
+import 'package:project4_flutter/shared/bloc/message_room_cubit/message_room_state.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/search_friend_cubit.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/search_group_cubit.dart';
 import 'package:project4_flutter/features/messages/models/message_entity.dart';
@@ -39,9 +39,12 @@ class _MessagesBodyState extends State<MessagesBody> {
   StompClient? stompClient;
   bool isConnected = false;
   int? chosenRoomId;
-
   List<Room>? _listRoom = List.empty();
   String? lastMessageId;
+
+  MessageRoomCubit getMessageRoomCubit() {
+    return context.read<MessageRoomCubit>();
+  }
 
   void connect(String userId) {
     try {
@@ -112,7 +115,7 @@ class _MessagesBodyState extends State<MessagesBody> {
           _globalKey.currentState!.onReRender(messageRoomEntity);
         }
       } else {
-        context.read<MessageRoomCubit>().getRooms(user.id.toString());
+        context.read<MessageRoomCubit>().getRooms();
       }
     }
 
@@ -135,7 +138,12 @@ class _MessagesBodyState extends State<MessagesBody> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     user = context.read<UserCubit>().loginUser!;
+
+    if (getMessageRoomCubit().state is MessageRoomNotAvailable) {
+      getMessageRoomCubit().loadUserRoom(user.id.toString());
+    }
 
     connect(user.id.toString());
   }
@@ -200,9 +208,7 @@ class _MessagesBodyState extends State<MessagesBody> {
                         setState(() {
                           chosenRoomId = roomId;
                         });
-                        context
-                            .read<MessageRoomCubit>()
-                            .getRooms(user.id.toString());
+                        context.read<MessageRoomCubit>().getRooms();
                       }
                     }
                   });
@@ -231,9 +237,7 @@ class _MessagesBodyState extends State<MessagesBody> {
                         setState(() {
                           chosenRoomId = roomId;
                         });
-                        context
-                            .read<MessageRoomCubit>()
-                            .getRooms(user.id.toString());
+                        context.read<MessageRoomCubit>().getRooms();
                       }
                     }
                   });
@@ -278,9 +282,7 @@ class _MessagesBodyState extends State<MessagesBody> {
                             },
                           )).then((_) {
                             if (context.mounted) {
-                              context
-                                  .read<MessageRoomCubit>()
-                                  .getRooms(user.id.toString());
+                              context.read<MessageRoomCubit>().getRooms();
                             }
                           });
                         },
@@ -302,9 +304,7 @@ class _MessagesBodyState extends State<MessagesBody> {
                             },
                           )).then((_) {
                             if (context.mounted) {
-                              context
-                                  .read<MessageRoomCubit>()
-                                  .getRooms(user.id.toString());
+                              context.read<MessageRoomCubit>().getRooms();
                             }
                           });
                         },
@@ -339,7 +339,7 @@ class _MessagesBodyState extends State<MessagesBody> {
                 },
               )).then((_) {
                 if (context.mounted) {
-                  context.read<MessageRoomCubit>().getRooms(user.id.toString());
+                  context.read<MessageRoomCubit>().getRooms();
                 }
               });
             }

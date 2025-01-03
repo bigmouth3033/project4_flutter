@@ -1,43 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project4_flutter/features/trips/bloc/reservation_cubit/reservation_state.dart';
-import 'package:project4_flutter/features/trips/bloc/trip_cubit/trip_state.dart';
+import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
 import 'package:project4_flutter/features/trips/models/reservation_count.dart';
+import 'package:project4_flutter/shared/bloc/reservation_cubit/reservation_state.dart';
 import 'package:project4_flutter/shared/models/custom_result.dart';
 
 import '../../../../shared/api/api_service.dart';
 import '../../../../shared/models/custom_paging.dart';
 import '../../../../shared/utils/token_storage.dart';
-import '../../models/trip_count.dart';
 
 class ReservationCubit extends Cubit<ReservationState> {
-  String? currentStatus;
+  var apiService = ApiService();
+  var tokenStorage = TokenStorage();
+  String currentStatus = "pending";
   String? currentStartDate;
   String? currentEndDate;
-
   int currentPage = 0;
   bool hasMore = true;
   bool isLoading = false;
-
+  final List<BookingMinimizeDto> bookingList = [];
   ReservationCount? reservationCount;
-
   ReservationCubit() : super(ReservationNotAvailable());
 
-  final List<BookingMinimizeDto> bookingList = [];
-
-  var apiService = ApiService();
-  var tokenStorage = TokenStorage();
-
   void updateDateRange(DateTimeRange selectedDateRange) {
-    emit(ReservationDateUpdated(selectedDateRange));
+    currentPage = 0;
+    hasMore = true;
+    currentStartDate = DateFormat('yyyy-MM-dd').format(selectedDateRange.start);
+    currentEndDate = DateFormat('yyyy-MM-dd').format(selectedDateRange.end);
+    bookingList.clear();
+    getBookingCount();
+    getBookingList();
   }
 
-  Future getBookingCount(startDate, endDate) async {
+  void updateStatus(String status) {
+    currentPage = 0;
+    hasMore = true;
+    currentStatus = status;
+    bookingList.clear();
+    getBookingList();
+  }
+
+  Future getBookingCount() async {
     try {
       Map<String, dynamic> params = {
-        'startDate': startDate,
-        'endDate': endDate,
+        'startDate': currentStartDate,
+        'endDate': currentEndDate,
       };
 
       var token = await tokenStorage.getToken();
@@ -55,14 +63,7 @@ class ReservationCubit extends Cubit<ReservationState> {
     }
   }
 
-  Future getBookingList(status, startDate, endDate) async {
-    if (currentStatus != status ||
-        currentStartDate != startDate ||
-        currentEndDate != endDate) {
-      currentPage = 0;
-      hasMore = true;
-    }
-
+  Future getBookingList() async {
     if (!hasMore) {
       emit(ReservationFinishLoaded());
       return;
@@ -78,9 +79,9 @@ class ReservationCubit extends Cubit<ReservationState> {
       Map<String, dynamic> params = {
         'pageNumber': currentPage,
         'pageSize': 10,
-        'status': status,
-        'startDate': startDate,
-        'endDate': endDate,
+        'status': currentStatus,
+        'startDate': currentStartDate,
+        'endDate': currentEndDate,
       };
 
       var token = await tokenStorage.getToken();
@@ -96,21 +97,8 @@ class ReservationCubit extends Cubit<ReservationState> {
         }).toList();
 
         hasMore = customPaging.hasNext;
-
-        if (currentStatus != status ||
-            currentStartDate != startDate ||
-            currentEndDate != endDate) {
-          bookingList.clear();
-          bookingList.addAll(bookings);
-          currentPage = 1;
-
-          currentStatus = status;
-          currentStartDate = startDate;
-          currentEndDate = endDate;
-        } else {
-          bookingList.addAll(bookings);
-          currentPage++;
-        }
+        bookingList.addAll(bookings);
+        currentPage++;
 
         emit(ReservationLoaded());
       } else {

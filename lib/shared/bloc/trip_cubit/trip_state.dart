@@ -19,4 +19,9 @@ class TripDateUpdated extends TripState {
   TripDateUpdated(this.selectedDateRange);
 }
 
+class TripStatusUpdated extends TripState {
+  String status;
+  TripStatusUpdated(this.status);
+}
+
 class TripNotAvailable extends TripState {}

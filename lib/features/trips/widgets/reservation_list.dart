@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:intl/intl.dart';
-import 'package:project4_flutter/features/trips/bloc/reservation_cubit/reservation_cubit.dart';
-import 'package:project4_flutter/features/trips/bloc/reservation_cubit/reservation_state.dart';
 
+import '../../../shared/bloc/reservation_cubit/reservation_cubit.dart';
+import '../../../shared/bloc/reservation_cubit/reservation_state.dart';
 import '../../../shared/widgets/loading_icon.dart';
 import '../models/booking_minimize_dto.dart';
 import '../models/reservation_count.dart';
@@ -39,12 +38,14 @@ class ReservationListState extends State<ReservationList> {
   List<BookingMinimizeDto> _bookingList = [];
   final _myController = ScrollController();
 
-  String status = "pending";
+  ReservationCubit getReservationCubit() {
+    return context.read<ReservationCubit>();
+  }
 
   void _myScrollListener() {
     if (_myController.offset >= _myController.position.maxScrollExtent &&
         !_myController.position.outOfRange) {
-      reRender(status, widget.selectedDateRange);
+      getReservationCubit().getBookingList();
     }
     if (_myController.offset <= _myController.position.minScrollExtent &&
         !_myController.position.outOfRange) {
@@ -58,30 +59,15 @@ class ReservationListState extends State<ReservationList> {
     {'label': 'Cancel', 'value': 'cancel'},
   ];
 
-  void reRender(status, selectedDateRange) {
-    var start = selectedDateRange.start;
-    var end = selectedDateRange.end;
-
-    context.read<ReservationCubit>().getBookingList(
-        status,
-        DateFormat('yyyy-MM-dd').format(start),
-        DateFormat('yyyy-MM-dd').format(end));
-  }
-
-  void getCount(selectedDateRange) {
-    var start = selectedDateRange.start;
-    var end = selectedDateRange.end;
-    context.read<ReservationCubit>().getBookingCount(
-        DateFormat('yyyy-MM-dd').format(start),
-        DateFormat('yyyy-MM-dd').format(end));
-  }
-
   @override
   void initState() {
     super.initState();
     _myController.addListener(_myScrollListener);
-    reRender(status, widget.selectedDateRange);
-    getCount(widget.selectedDateRange);
+
+    if (getReservationCubit().state is ReservationNotAvailable) {
+      getReservationCubit().getBookingList();
+      getReservationCubit().getBookingCount();
+    }
   }
 
   String returnNothing(status) {
@@ -100,7 +86,7 @@ class ReservationListState extends State<ReservationList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ReservationCubit, ReservationState>(
+    return BlocBuilder<ReservationCubit, ReservationState>(
       builder: (context, tripState) {
         _bookingList = context.read<ReservationCubit>().bookingList;
 
@@ -127,13 +113,6 @@ class ReservationListState extends State<ReservationList> {
 
         bool isLoading = tripState is ReservationLoading;
         return buildBodyScaffold(groupDate, isLoading, reservationCount);
-      },
-      listener: (context, state) {
-        if (state is ReservationDateUpdated) {
-          DateTimeRange selectedDateRange = state.selectedDateRange;
-          getCount(selectedDateRange);
-          reRender(status, selectedDateRange);
-        }
       },
     );
   }
@@ -290,7 +269,7 @@ class ReservationListState extends State<ReservationList> {
                           size: 34.0,
                         ),
                         Text(
-                          returnNothing(status),
+                          returnNothing(getReservationCubit().currentStatus),
                           textAlign: TextAlign.center,
                           softWrap: true,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -335,15 +314,13 @@ class ReservationListState extends State<ReservationList> {
               padding: const EdgeInsets.all(4.0),
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    backgroundColor: status == listStatus[index]['value']
+                    backgroundColor: getReservationCubit().currentStatus ==
+                            listStatus[index]['value']
                         ? Colors.black
                         : null),
                 onPressed: () {
-                  setState(() {
-                    status = listStatus[index]['value']!;
-                  });
-                  reRender(
-                      listStatus[index]['value']!, widget.selectedDateRange);
+                  getReservationCubit()
+                      .updateStatus(listStatus[index]['value']!);
                 },
                 child: Text(
                   reservationCount == null
@@ -351,7 +328,8 @@ class ReservationListState extends State<ReservationList> {
                       : "${listStatus[index]['label']!} (${count(listStatus[index]['value'])})",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: status == listStatus[index]['value']
+                      color: getReservationCubit().currentStatus ==
+                              listStatus[index]['value']
                           ? Colors.white
                           : Colors.black),
                 ),

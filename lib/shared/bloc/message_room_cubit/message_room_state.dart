@@ -1,4 +1,4 @@
-import '../../models/room.dart';
+import '../../../features/messages/models/room.dart';
 
 abstract class MessageRoomState {}
 
@@ -13,3 +13,5 @@ class MessageRoomError extends MessageRoomState {
   final String message;
   MessageRoomError(this.message);
 }
+
+class MessageRoomNotAvailable extends MessageRoomState {}

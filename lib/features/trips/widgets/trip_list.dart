@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
 
 import 'package:project4_flutter/features/trips/models/trip_count.dart';
 import 'package:project4_flutter/features/trips/widgets/booking_detail.dart';
 import 'package:project4_flutter/shared/widgets/loading_icon.dart';
 
-import '../bloc/trip_cubit/trip_cubit.dart';
-import '../bloc/trip_cubit/trip_state.dart';
+import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
+import '../../../shared/bloc/trip_cubit/trip_state.dart';
 
 const months = [
   "January",
@@ -40,12 +39,14 @@ class TripListState extends State<TripList> {
   List<BookingMinimizeDto> _bookingList = [];
   final _myController = ScrollController();
 
-  String status = "checkout";
+  TripCubit getTripCubit() {
+    return context.read<TripCubit>();
+  }
 
   void _myScrollListener() {
     if (_myController.offset >= _myController.position.maxScrollExtent &&
         !_myController.position.outOfRange) {
-      reRender(status, widget.selectedDateRange);
+      context.read<TripCubit>().getBookingList();
     }
     if (_myController.offset <= _myController.position.minScrollExtent &&
         !_myController.position.outOfRange) {
@@ -61,30 +62,14 @@ class TripListState extends State<TripList> {
     {'label': 'Stay-in history', 'value': 'history'}
   ];
 
-  void reRender(status, selectedDateRange) {
-    var start = selectedDateRange.start;
-    var end = selectedDateRange.end;
-
-    context.read<TripCubit>().getBookingList(
-        status,
-        DateFormat('yyyy-MM-dd').format(start),
-        DateFormat('yyyy-MM-dd').format(end));
-  }
-
-  void getCount(selectedDateRange) {
-    var start = selectedDateRange.start;
-    var end = selectedDateRange.end;
-    context.read<TripCubit>().getBookingCount(
-        DateFormat('yyyy-MM-dd').format(start),
-        DateFormat('yyyy-MM-dd').format(end));
-  }
-
   @override
   void initState() {
     super.initState();
     _myController.addListener(_myScrollListener);
-    reRender(status, widget.selectedDateRange);
-    getCount(widget.selectedDateRange);
+    if (getTripCubit().state is TripNotAvailable) {
+      getTripCubit().getBookingCount();
+      getTripCubit().getBookingList();
+    }
   }
 
   String returnNothing(status) {
@@ -109,7 +94,7 @@ class TripListState extends State<TripList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TripCubit, TripState>(
+    return BlocBuilder<TripCubit, TripState>(
       builder: (context, tripState) {
         _bookingList = context.read<TripCubit>().bookingList;
 
@@ -135,13 +120,6 @@ class TripListState extends State<TripList> {
 
         bool isLoading = tripState is TripLoading;
         return buildBodyScaffold(groupDate, isLoading, tripCount);
-      },
-      listener: (context, state) {
-        if (state is TripDateUpdated) {
-          DateTimeRange selectedDateRange = state.selectedDateRange;
-          getCount(selectedDateRange);
-          reRender(status, selectedDateRange);
-        }
       },
     );
   }
@@ -298,7 +276,7 @@ class TripListState extends State<TripList> {
                           size: 34.0,
                         ),
                         Text(
-                          returnNothing(status),
+                          returnNothing(getTripCubit().currentStatus),
                           textAlign: TextAlign.center,
                           softWrap: true,
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -349,15 +327,12 @@ class TripListState extends State<TripList> {
               padding: const EdgeInsets.all(4.0),
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                    backgroundColor: status == listStatus[index]['value']
+                    backgroundColor: getTripCubit().currentStatus ==
+                            listStatus[index]['value']
                         ? Colors.black
                         : null),
                 onPressed: () {
-                  setState(() {
-                    status = listStatus[index]['value']!;
-                  });
-                  reRender(
-                      listStatus[index]['value']!, widget.selectedDateRange);
+                  getTripCubit().updateStatus(listStatus[index]['value']!);
                 },
                 child: Text(
                   tripCount == null
@@ -365,7 +340,8 @@ class TripListState extends State<TripList> {
                       : "${listStatus[index]['label']!} (${count(listStatus[index]['value'])})",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: status == listStatus[index]['value']
+                      color: getTripCubit().currentStatus ==
+                              listStatus[index]['value']
                           ? Colors.white
                           : Colors.black),
                 ),

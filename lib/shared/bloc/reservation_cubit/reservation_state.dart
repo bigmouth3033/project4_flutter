@@ -14,9 +14,4 @@ class ReservationError extends ReservationState {
   ReservationError(this.message);
 }
 
-class ReservationDateUpdated extends ReservationState {
-  DateTimeRange selectedDateRange;
-  ReservationDateUpdated(this.selectedDateRange);
-}
-
 class ReservationNotAvailable extends ReservationState {}

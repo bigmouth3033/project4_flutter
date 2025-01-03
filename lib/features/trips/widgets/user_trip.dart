@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:project4_flutter/features/trips/bloc/reservation_cubit/reservation_cubit.dart';
-import 'package:project4_flutter/features/trips/bloc/trip_cubit/trip_cubit.dart';
+import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/trips/widgets/reservation_list.dart';
 import 'package:project4_flutter/features/trips/widgets/trip_list.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:provider/provider.dart';
 
 import '../../../main.dart';
+import '../../../shared/bloc/reservation_cubit/reservation_cubit.dart';
+import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
+import '../../../shared/bloc/trip_cubit/trip_state.dart';
 
 class UserTrip extends StatefulWidget {
   const UserTrip({super.key});
@@ -49,21 +51,39 @@ class _UserTripState extends State<UserTrip> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    var format = DateFormat('yyyy-MM-dd');
+    var now = DateTime.now();
 
-    selectedDateRange = DateTimeRange(
-      start: context.read<UserCubit>().loginUser!.createdAt, // Start date
-      end: DateTime(2026, 1, 1), // End date
-    );
+    if (context.read<TripCubit>().state is TripNotAvailable) {
+      selectedDateRange = DateTimeRange(
+        start: context.read<UserCubit>().loginUser!.createdAt, // Start date
+        end: DateTime(now.year + 1, 1, 1), // End date
+      );
+      context.read<TripCubit>().updateDateRange(
+            DateTimeRange(
+              start:
+                  context.read<UserCubit>().loginUser!.createdAt, // Start date
+              end: DateTime(now.year + 1, 1, 1), // End date
+            ),
+          );
+    } else {
+      if (context.read<TripCubit>().currentStartDate != null) {
+        selectedDateRange = DateTimeRange(
+          start: format
+              .parse(context.read<TripCubit>().currentStartDate!), // Start date
+          end: format
+              .parse(context.read<TripCubit>().currentEndDate!), // End date
+        );
+      }
+    }
   }
 
-  void updateDate(status) {
+  DateTimeRange? updateDate(status) {
     if (status == "All") {
-      setState(() {
-        selectedDateRange = DateTimeRange(
-          start: context.read<UserCubit>().loginUser!.createdAt, // Start date
-          end: DateTime(2026, 1, 1), // End date
-        );
-      });
+      return DateTimeRange(
+        start: context.read<UserCubit>().loginUser!.createdAt, // Start date
+        end: DateTime(2026, 1, 1), // End date
+      );
     }
 
     if (status == "1m") {
@@ -73,19 +93,15 @@ class _UserTripState extends State<UserTrip> {
 
       if (firstDayOfCurrentMonth
           .isBefore(context.read<UserCubit>().loginUser!.createdAt)) {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: context.read<UserCubit>().loginUser!.createdAt,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: context.read<UserCubit>().loginUser!.createdAt,
+          end: lastDayOfCurrentMonth,
+        );
       } else {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: firstDayOfCurrentMonth,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: firstDayOfCurrentMonth,
+          end: lastDayOfCurrentMonth,
+        );
       }
     }
 
@@ -96,19 +112,15 @@ class _UserTripState extends State<UserTrip> {
 
       if (firstDayOfPrev6Month
           .isBefore(context.read<UserCubit>().loginUser!.createdAt)) {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: context.read<UserCubit>().loginUser!.createdAt,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: context.read<UserCubit>().loginUser!.createdAt,
+          end: lastDayOfCurrentMonth,
+        );
       } else {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: firstDayOfPrev6Month,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: firstDayOfPrev6Month,
+          end: lastDayOfCurrentMonth,
+        );
       }
     }
 
@@ -119,21 +131,19 @@ class _UserTripState extends State<UserTrip> {
 
       if (firstDayOfPrev12Month
           .isBefore(context.read<UserCubit>().loginUser!.createdAt)) {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: context.read<UserCubit>().loginUser!.createdAt,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: context.read<UserCubit>().loginUser!.createdAt,
+          end: lastDayOfCurrentMonth,
+        );
       } else {
-        setState(() {
-          selectedDateRange = DateTimeRange(
-            start: firstDayOfPrev12Month,
-            end: lastDayOfCurrentMonth,
-          );
-        });
+        return DateTimeRange(
+          start: firstDayOfPrev12Month,
+          end: lastDayOfCurrentMonth,
+        );
       }
     }
+
+    return null;
   }
 
   Future<void> _selectDateRange() async {
@@ -165,7 +175,16 @@ class _UserTripState extends State<UserTrip> {
                       style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.black),
                       onPressed: () {
-                        updateDate(lists[index]);
+                        DateTimeRange newRange = updateDate(lists[index])!;
+                        setState(() {
+                          selectedDateRange = newRange;
+                        });
+
+                        context.read<TripCubit>().updateDateRange(newRange);
+                        context
+                            .read<ReservationCubit>()
+                            .updateDateRange(newRange);
+
                         Navigator.pop(context);
                       },
                       child: Text(

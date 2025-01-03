@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project4_flutter/features/trips/bloc/trip_cubit/trip_cubit.dart';
 import 'package:project4_flutter/features/trips/widgets/user_trip.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 import 'package:project4_flutter/shared/widgets/loading_icon.dart';
-import 'package:provider/provider.dart';
 
 class Trip extends StatefulWidget {
   const Trip({super.key});

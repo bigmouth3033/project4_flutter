@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/app.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/message_cubit.dart';
-import 'package:project4_flutter/features/messages/bloc/message_cubit/message_room_cubit.dart';
+import 'package:project4_flutter/shared/bloc/message_room_cubit/message_room_cubit.dart';
 import 'package:project4_flutter/features/messages/widgets/messages_body.dart';
 import 'package:project4_flutter/shared/widgets/loading_icon.dart';
 import 'package:provider/provider.dart';
@@ -25,11 +25,7 @@ class _MessageState extends State<Message> {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserSuccess) {
-          final user = state.user;
-          return BlocProvider(
-            create: (_) => MessageRoomCubit(user.id.toString()),
-            child: const MessagesBody(),
-          );
+          return const MessagesBody();
         }
 
         if (state is UserLoading) {
