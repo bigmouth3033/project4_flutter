@@ -23,22 +23,22 @@ class TripCubit extends Cubit<TripState> {
   final List<BookingMinimizeDto> bookingList = [];
   TripCubit() : super(TripNotAvailable());
 
-  void updateDateRange(DateTimeRange selectedDateRange) {
+  void updateDateRange(DateTimeRange selectedDateRange) async {
     currentPage = 0;
     hasMore = true;
     currentStartDate = DateFormat('yyyy-MM-dd').format(selectedDateRange.start);
     currentEndDate = DateFormat('yyyy-MM-dd').format(selectedDateRange.end);
     bookingList.clear();
-    getBookingCount();
-    getBookingList();
+    await getBookingCount();
+    await getBookingList();
   }
 
-  void updateStatus(String status) {
+  Future updateStatus(String status) async {
     currentPage = 0;
     hasMore = true;
     currentStatus = status;
     bookingList.clear();
-    getBookingList();
+    await getBookingList();
   }
 
   Future getBookingCount() async {

@@ -16,7 +16,7 @@ class BookingMinimizeDto {
   DateTime createdAt;
   DateTime updatedAt;
   String status;
-  Property property;
+  PropertyMinimizeDto property;
   RefundPolicy refundPolicy;
   Review? hostReview;
   Review? userReview;
@@ -68,7 +68,7 @@ class BookingMinimizeDto {
         createdAt: DateTime.parse(json["createdAt"]).toLocal(),
         updatedAt: DateTime.parse(json["updatedAt"]).toLocal(),
         status: json["status"],
-        property: Property.fromJson(json["property"]),
+        property: PropertyMinimizeDto.fromJson(json["property"]),
         refundPolicy: RefundPolicy.fromJson(json["refundPolicy"]),
         hostReview: json["hostReview"] != null
             ? Review.fromJson(json["hostReview"])
@@ -228,7 +228,7 @@ class Review {
       };
 }
 
-class Property {
+class PropertyMinimizeDto {
   int id;
   String propertyType;
   String propertyTitle;
@@ -272,7 +272,7 @@ class Property {
   bool petAllowed;
   bool selfCheckIn;
 
-  Property({
+  PropertyMinimizeDto({
     required this.id,
     required this.propertyType,
     required this.propertyTitle,
@@ -317,7 +317,8 @@ class Property {
     required this.selfCheckIn,
   });
 
-  factory Property.fromJson(Map<String, dynamic> json) => Property(
+  factory PropertyMinimizeDto.fromJson(Map<String, dynamic> json) =>
+      PropertyMinimizeDto(
         id: json["id"],
         propertyType: json["propertyType"],
         propertyTitle: json["propertyTitle"],
