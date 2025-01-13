@@ -1,18 +1,21 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project4_flutter/shared/api/property_detail_api.dart';
+import 'package:project4_flutter/features/property_detail/api/property_detail_api.dart';
 import 'package:project4_flutter/shared/bloc/property_cubit/property_state.dart';
+import 'package:project4_flutter/shared/models/property.dart';
 
 class PropertyCubit extends Cubit<PropertyState> {
   PropertyCubit() : super(PropertyLoading("Loading..."));
+  Property? property;
 
   var propertyApi = PropertyDetailApi();
 
-  Future<void> getProperty() async {
+  Future<void> getProperty(int id) async {
     emit(PropertyLoading("Loading..."));
     try {
-      var property = await propertyApi.getProperty(687);
-      if (property != null) {
-        emit(PropertySuccess(property));
+      var propertyResponse = await propertyApi.getProperty(id);
+      if (propertyResponse != null) {
+        property = propertyResponse;
+        emit(PropertySuccess(propertyResponse));
       } else {
         emit(PropertyError("Property not found"));
       }

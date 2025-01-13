@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  //ipconfig
-  final String baseUrl = "172.16.0.16:8080";
+  final String baseUrl = "192.168.1.101:8080";
 
   ApiService();
 
@@ -36,7 +35,7 @@ class ApiService {
       request.headers.addAll(headers);
     }
 
-    body.forEach((key, value) => request.fields[key] = value);
+    body.forEach((key, value) => request.fields[key] = value.toString());
 
     var response = await request.send();
 

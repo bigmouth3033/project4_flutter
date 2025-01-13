@@ -52,8 +52,22 @@ Property _$PropertyFromJson(Map<String, dynamic> json) => Property(
       amenity: (json['amenity'] as List<dynamic>)
           .map((e) => Amenity.fromJson(e as Map<String, dynamic>))
           .toList(),
+      bookDateDetails: (json['bookDateDetails'] as List<dynamic>?)
+          ?.map((e) => BookDateDetail.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      notAvailableDates: (json['notAvailableDates'] as List<dynamic>?)
+          ?.map((e) =>
+              PropertyNotAvailableDate.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      exceptionDates: (json['exceptionDates'] as List<dynamic>?)
+          ?.map((e) => ExceptionDate.fromJson(e as Map<String, dynamic>))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      checkinScore: (json['checkinScore'] as num).toInt(),
+      accuracyScore: (json['accuracyScore'] as num).toInt(),
+      cleanlinessScore: (json['cleanlinessScore'] as num).toInt(),
+      communicationScore: (json['communicationScore'] as num).toInt(),
     );
 
 Map<String, dynamic> _$PropertyToJson(Property instance) => <String, dynamic>{
@@ -92,7 +106,14 @@ Map<String, dynamic> _$PropertyToJson(Property instance) => <String, dynamic>{
       'instantBookRequirementID': instance.instantBookRequirementID,
       'propertyImages': instance.propertyImages,
       'propertyAmenities': instance.propertyAmenities,
-      'amenities': instance.amenity,
+      'amenity': instance.amenity,
+      'bookDateDetails': instance.bookDateDetails,
+      'notAvailableDates': instance.notAvailableDates,
+      'exceptionDates': instance.exceptionDates,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
+      'cleanlinessScore': instance.cleanlinessScore,
+      'accuracyScore': instance.accuracyScore,
+      'checkinScore': instance.checkinScore,
+      'communicationScore': instance.communicationScore,
     };

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:project4_flutter/features/property_detail/property_detail.dart';
 import 'package:project4_flutter/features/travel/api/travel_api.dart';
 import 'package:project4_flutter/features/travel/widgets/travel_category.dart';
 import 'package:project4_flutter/features/travel/widgets/travel_header.dart';
@@ -25,44 +26,16 @@ class _TravelState extends State<Travel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TravelHeader(),
-      body: Column(
-        children: [
-          TravelCategory(categoryId, changeCategoryId),
-          Expanded(
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              children: List<Widget>.generate(20, (index) {
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 400,
-                        width: double.maxFinite,
-                        child: Card(),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "aaaaaa",
-                        textAlign: TextAlign.left,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text("bbbbbbbbb"),
-                      SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          )
-        ],
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PropertyDetail()),
+            );
+          },
+          child: const Text('Property Detail'),
+        ),
       ),
     );
   }

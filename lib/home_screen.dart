@@ -32,26 +32,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body: PageView(
-      //   controller: _pageController,
-      //   children: _pages,
-      //   onPageChanged: (index) {
-      //     setState(() {
-      //       _bottomNavigationIndex = index;
-      //     });
-      //   },
-      // ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PropertyDetail()),
-            );
-          },
-          child: const Text('Property Detail'),
-        ),
+      body: PageView(
+        controller: _pageController,
+        children: _pages,
+        onPageChanged: (index) {
+          setState(() {
+            _bottomNavigationIndex = index;
+          });
+        },
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavigationIndex,
         onTap: (value) {

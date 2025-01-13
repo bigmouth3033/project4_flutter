@@ -1,5 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:project4_flutter/shared/models/amenity.dart';
+import 'package:project4_flutter/shared/models/book_date_detail.dart';
+import 'package:project4_flutter/shared/models/exception_date.dart';
+import 'package:project4_flutter/shared/models/property_not_available_date.dart';
 import 'package:project4_flutter/shared/models/user.dart';
 
 part 'property.g.dart';
@@ -42,49 +45,62 @@ class Property {
   final List<String> propertyImages;
   final List<int> propertyAmenities;
   final List<Amenity> amenity;
+  final List<BookDateDetail>? bookDateDetails;
+  final List<PropertyNotAvailableDate>? notAvailableDates;
+  final List<ExceptionDate>? exceptionDates;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int cleanlinessScore;
+  final int accuracyScore;
+  final int checkinScore;
+  final int communicationScore;
 
-  Property({
-    required this.id,
-    required this.propertyType,
-    required this.propertyTitle,
-    required this.maximumMonthPreBook,
-    required this.bookingType,
-    required this.basePrice,
-    required this.weeklyDiscount,
-    required this.monthlyDiscount,
-    required this.addressCode,
-    required this.addressDetail,
-    required this.checkInAfter,
-    required this.checkOutBefore,
-    required this.maximumGuest,
-    required this.numberOfBathRoom,
-    required this.numberOfBedRoom,
-    required this.numberOfBed,
-    required this.petAllowed,
-    this.additionalRules,
-    this.maximumStay,
-    this.minimumStay,
-    required this.aboutProperty,
-    this.guestAccess,
-     this.detailToNote,
-    required this.selfCheckIn,
-    required this.coordinatesX,
-    required this.coordinatesY,
-    required this.status,
-    this.managedCityId,
-    this.refundPolicyId,
-    required this.userId,
-    this.user,
-    required this.propertyCategoryID,
-    this.instantBookRequirementID,
-    required this.propertyImages,
-    required this.propertyAmenities,
-    required this.amenity,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  Property(
+      {required this.id,
+      required this.propertyType,
+      required this.propertyTitle,
+      required this.maximumMonthPreBook,
+      required this.bookingType,
+      required this.basePrice,
+      required this.weeklyDiscount,
+      required this.monthlyDiscount,
+      required this.addressCode,
+      required this.addressDetail,
+      required this.checkInAfter,
+      required this.checkOutBefore,
+      required this.maximumGuest,
+      required this.numberOfBathRoom,
+      required this.numberOfBedRoom,
+      required this.numberOfBed,
+      required this.petAllowed,
+      this.additionalRules,
+      this.maximumStay,
+      this.minimumStay,
+      required this.aboutProperty,
+      this.guestAccess,
+      this.detailToNote,
+      required this.selfCheckIn,
+      required this.coordinatesX,
+      required this.coordinatesY,
+      required this.status,
+      this.managedCityId,
+      this.refundPolicyId,
+      required this.userId,
+      this.user,
+      required this.propertyCategoryID,
+      this.instantBookRequirementID,
+      required this.propertyImages,
+      required this.propertyAmenities,
+      required this.amenity,
+      this.bookDateDetails,
+      this.notAvailableDates,
+      this.exceptionDates,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.checkinScore,
+      required this.accuracyScore,
+      required this.cleanlinessScore,
+      required this.communicationScore});
 
   factory Property.fromJson(Map<String, dynamic> json) =>
       _$PropertyFromJson(json);

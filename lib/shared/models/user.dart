@@ -18,6 +18,8 @@ class User {
 
   final String? avatar;
 
+  final DateTime createdAt;
+
   User(
       {required this.id,
       required this.email,
@@ -25,7 +27,8 @@ class User {
       required this.lastName,
       required this.address,
       required this.phoneNumber,
-      required this.avatar});
+      required this.avatar,
+      required this.createdAt});
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 

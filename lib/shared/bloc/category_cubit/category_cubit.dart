@@ -7,11 +7,9 @@ import '../../models/custom_result.dart';
 
 class CategoryCubit extends Cubit<CategoryState> {
   CategoryCubit() : super(CategoryLoading()) {
-    getCategory(); // Call initializeUser when the cubit is created
+    getCategory();
   }
-
   var apiService = ApiService();
-
   Future<List<Category>?> getCategory() async {
     emit(CategoryLoading());
     try {
@@ -22,9 +20,7 @@ class CategoryCubit extends Cubit<CategoryState> {
         var categories = (customResult.data as List).map((item) {
           return Category.fromJson(item);
         }).toList();
-
         emit(CategorySuccess(categories));
-
         return categories;
       }
       return null;

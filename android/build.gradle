@@ -16,3 +16,21 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+
+
+//buildscript {
+//    repositories {
+//        google()  // Kho lưu trữ Google
+//        mavenCentral()  // Kho lưu trữ Maven Central
+//    }
+//    dependencies {
+//        classpath 'com.android.tools.build:gradle:7.4.2'  // Đảm bảo bạn đang sử dụng phiên bản phù hợp
+//    }
+//}
+
+allprojects {
+    repositories {
+        google()  // Kho lưu trữ Google cho các dự án con
+        mavenCentral()  // Kho lưu trữ Maven Central cho các dự án con
+    }
+}
