@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/login_and_security/login_and_security.dart';
 import 'package:project4_flutter/features/personal_information/personal_information.dart';
+import 'package:project4_flutter/features/user_profile/user_profile.dart';
 import 'package:project4_flutter/main.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
@@ -77,7 +78,9 @@ class AuthorizeProfile extends StatelessWidget {
                                 TextButton(
                                   style: TextButton.styleFrom(
                                       padding: const EdgeInsets.all(0)),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => const UserProfile(),));
+                                  },
                                   child: const Text("Show profile"),
                                 ),
                               ],

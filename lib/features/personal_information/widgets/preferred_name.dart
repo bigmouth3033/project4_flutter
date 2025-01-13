@@ -37,13 +37,13 @@ class _PreferredNameState extends State<PreferredName> {
             PreferredNameRequest(preferredName: preferredName.trim());
 
         await _personalInformationService.putPreferredName(request);
-        context.read<UserCubit>().initializeUser();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Preferred name updated successfully")),
         );
+        await context.read<UserCubit>().initializeUser();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to update legal name: $e")),
+          SnackBar(content: Text("Something when wrong when update preferred Name")),
         );
       }
     }

@@ -6,6 +6,7 @@ import 'package:project4_flutter/features/personal_information/models/legal_name
 import 'package:http/http.dart' as http;
 import 'package:project4_flutter/features/personal_information/models/phone_number_request.dart';
 import 'package:project4_flutter/features/personal_information/models/preferred_name_request.dart';
+import 'package:project4_flutter/features/user_profile/models/avatar_option_request.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
 
 class PersonalInformationService {
@@ -96,6 +97,29 @@ class PersonalInformationService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update Password');
+    }
+  }
+
+  Future putAvatarImage(AvatarOptionRequest request) async {
+
+    var token = await tokenStorage.getToken();
+    var uri = Uri.http(baseUrl, "/userCM/updateAvatar");
+
+    final multipartRequest = http.MultipartRequest('PUT', uri);
+    multipartRequest.headers['Authorization'] = "Bearer $token";
+
+    multipartRequest.fields['avatarOption'] = request.avatarOption;
+    multipartRequest.files.add(
+      await http.MultipartFile.fromPath(
+        'avatarFileImage', // Tên tham số trong API
+        request.avatarFileImageUri, // Đường dẫn của tệp
+      ),
+    );
+    try {
+      final response = await multipartRequest.send();
+
+    } catch (e) {
+      throw Exception('Failed to update Avatar');
     }
   }
 }
