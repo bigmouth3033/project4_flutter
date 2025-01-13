@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_svg/svg.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/favourite/favourite.dart';
+import 'package:project4_flutter/shared/bloc/travel_cubit/travel_cubit.dart';
 
 import 'features/favorites/favorites.dart';
 import 'features/messages/message.dart';
@@ -21,8 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
+    // Provide the Cubit
     const Travel(),
-    const Favorites(),
+    const Favourite(),
     const Trip(),
     const Message(),
     const Profile()
@@ -32,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
         children: _pages,
         onPageChanged: (index) {
@@ -63,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.black,
               size: 25.0,
             ),
-            label: "Travel",
+            label: "Explore",
           ),
           const BottomNavigationBarItem(
             activeIcon: HugeIcon(

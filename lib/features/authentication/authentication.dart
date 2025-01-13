@@ -7,7 +7,7 @@ import 'package:project4_flutter/shared/widgets/custom_input_form.dart';
 import 'package:project4_flutter/shared/widgets/red_button.dart';
 
 class Authentication extends StatefulWidget {
-  Authentication({super.key});
+  const Authentication({super.key});
 
   @override
   State<Authentication> createState() => _AuthenticationState();
@@ -43,6 +43,7 @@ class _AuthenticationState extends State<Authentication> {
       var body = <String, String>{};
 
       body['email'] = _emailController.value.text;
+
 
       CustomResult customResult =
           await authenticationApi.authenticationRequest(body);

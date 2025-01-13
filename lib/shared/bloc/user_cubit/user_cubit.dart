@@ -3,8 +3,6 @@ import 'package:project4_flutter/shared/api/user_api.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
 
-import '../../models/user.dart';
-
 class UserCubit extends Cubit<UserState> {
   UserCubit() : super(UserNotLogin()) {
     initializeUser(); // Call initializeUser when the cubit is created

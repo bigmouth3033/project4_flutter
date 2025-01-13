@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "10.0.42.189:8080";
+  final String baseUrl = "192.168.1.252:8080";
 
   ApiService();
 
   Future<Map<String, dynamic>> get(String endpoint,
       {Map<String, dynamic> params = const {},
       Map<String, String>? headers}) async {
-    var uri = Uri.http(baseUrl, endpoint, params);
+    Map<String, dynamic> stringParams =
+        params.map((key, value) => MapEntry(key, value?.toString()));
+    var uri = Uri.http(baseUrl, endpoint, stringParams);
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
@@ -30,7 +32,17 @@ class ApiService {
       request.headers.addAll(headers);
     }
 
-    body.forEach((key, value) => request.fields[key] = value);
+    body.forEach((key, value) {
+      if (value != null) {
+        if (value is List) {
+          for (int i = 0; i < value.length; i++) {
+            request.fields['$key[$i]'] = value[i].toString();
+          }
+        } else {
+          request.fields[key] = value.toString();
+        }
+      }
+    });
 
     var response = await request.send();
 

@@ -1,20 +1,28 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project4_flutter/shared/api/api_service.dart';
-import 'package:project4_flutter/shared/bloc/category_cubit/category_state.dart';
 
 import '../../models/category.dart';
 import '../../models/custom_result.dart';
 
-class CategoryCubit extends Cubit<CategoryState> {
-  CategoryCubit() : super(CategoryLoading()) {
+//this Cubit receive int? as a state to manage (emit new state whenever state changed), save data from api...
+class CategoryCubit extends Cubit<int?> {
+  CategoryCubit() : super(null) {
     getCategory(); // Call initializeUser when the cubit is created
   }
 
+  bool isLoading = false;
+  int? categoryId;
+  List<Category> categoryList = [];
   var apiService = ApiService();
 
-  Future<List<Category>?> getCategory() async {
-    emit(CategoryLoading());
+  void changeCategory(int category) async {
+    categoryId = category;
+    emit(categoryId); //emit to change state => re-render base on BlocListener
+  }
+
+  Future<void> getCategory() async {
     try {
+      isLoading = true;
       var response = await apiService.get("categoryCM");
       var customResult = CustomResult.fromJson(response);
 
@@ -23,14 +31,20 @@ class CategoryCubit extends Cubit<CategoryState> {
           return Category.fromJson(item);
         }).toList();
 
-        emit(CategorySuccess(categories));
+        //get PUBLIC category
+        categoryList = categories.where((element) {
+          return element.status == true;
+        }).toList();
 
-        return categories;
+        categoryId = categoryList[0].id;
+        emit(categoryId);
+      } else {
+        print('fail to load categories');
       }
-      return null;
     } catch (ex) {
-      emit(CategoryError(ex.toString()));
-      return null;
+      print(ex.toString());
+    } finally {
+      isLoading = false;
     }
   }
 }
