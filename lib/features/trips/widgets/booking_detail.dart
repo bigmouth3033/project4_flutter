@@ -1,12 +1,21 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:project4_flutter/features/messages/widgets/messages_body.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../messages/bloc/message_cubit/add_friend_cubit.dart';
+import '../../messages/bloc/message_cubit/search_friend_cubit.dart';
 
 class BookingDetail extends StatelessWidget {
   const BookingDetail(this.booking, {super.key});
@@ -120,7 +129,28 @@ class BookingDetail extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    print("sssssvxcvrst");
+
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (_) => SearchFriendCubit(
+                                  booking.customer.id.toString()),
+                            ),
+                            BlocProvider(
+                              create: (_) => AddFriendCubit(),
+                            )
+                          ],
+                          child: MessagesBody(
+                            userId: booking.host.id,
+                          ),
+                        );
+                      },
+                    ));
+                  },
                   splashColor:
                       Colors.blue.withOpacity(0.3), // Ripple effect color
                   highlightColor: Colors.blue.withOpacity(0.1), // Ho
@@ -211,7 +241,49 @@ class BookingDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              if (booking.status == "PENDING")
+              SizedBox(
+                height: 250,
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(
+                        double.parse(booking.property.coordinatesX),
+                        double.parse(booking.property
+                            .coordinatesY)), // Center the map over London
+                    initialZoom: 15,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png', // OSMF's Tile Server
+                      userAgentPackageName: 'com.example.app',
+                    ),
+                    RichAttributionWidget(
+                      attributions: [
+                        TextSourceAttribution(
+                          'OpenStreetMap contributors',
+                          onTap: () => launchUrl(Uri.parse(
+                              'https://openstreetmap.org/copyright')), // (external)
+                        ),
+                        // Also add images...
+                      ],
+                    ),
+                    LocationMarkerLayer(
+                      style: const LocationMarkerStyle(
+                        marker: Image(
+                            height: 50,
+                            width: 50,
+                            image: AssetImage('assets/images/marker.png')),
+                      ),
+                      position: LocationMarkerPosition(
+                        latitude: double.parse(booking.property.coordinatesX),
+                        longitude: double.parse(booking.property.coordinatesY),
+                        accuracy: 1,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              if (booking.status == "PENDING ")
                 Padding(
                   padding:
                       const EdgeInsets.only(bottom: 12, left: 20, right: 20),
@@ -254,16 +326,6 @@ class BookingDetail extends StatelessWidget {
                     ),
                   ),
                 ),
-              Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      width: 5,
-                      color: Colors.black.withOpacity(0.2),
-                    ),
-                  ),
-                ),
-              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -531,6 +593,7 @@ class BookingDetail extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
+                    margin: const EdgeInsets.only(bottom: 20),
                     padding: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                       border: Border(
@@ -584,7 +647,8 @@ class BookingDetail extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: InkWell(
                   onTap: () {},
                   splashColor:
@@ -750,7 +814,26 @@ class BookingDetail extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (_) => SearchFriendCubit(
+                                  booking.customer.id.toString()),
+                            ),
+                            BlocProvider(
+                              create: (_) => AddFriendCubit(),
+                            )
+                          ],
+                          child: const MessagesBody(
+                            userId: 0,
+                          ),
+                        );
+                      },
+                    ));
+                  },
                   splashColor:
                       Colors.blue.withOpacity(0.3), // Ripple effect color
                   highlightColor: Colors.blue.withOpacity(0.1), // Ho

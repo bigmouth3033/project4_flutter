@@ -1,19 +1,12 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project4_flutter/shared/bloc/category_cubit/category_cubit.dart';
-import 'package:project4_flutter/shared/bloc/category_cubit/category_state.dart';
-import 'package:project4_flutter/shared/widgets/loading_icon.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../shared/models/category.dart';
 
 class TravelCategory extends StatefulWidget {
-  const TravelCategory(this.categoryId, this.changeCategory, {super.key});
-
-  final int categoryId;
-  final void Function(int) changeCategory;
+  const TravelCategory({super.key});
 
   @override
   State<TravelCategory> createState() => TravelCategoryState();
@@ -21,44 +14,17 @@ class TravelCategory extends StatefulWidget {
 
 class TravelCategoryState extends State<TravelCategory> {
   final ScrollController _scrollController = ScrollController();
+  late CategoryCubit getCategoryCubit;
   late List<Category>? _categories;
-  double _previousOffset = 0.0;
-  bool _hasInitialized = false;
 
-  Timer? _debounceTimer;
-
-  void _onScroll() {
-    if (_categories == null || _categories!.isEmpty) return;
-
-    double offset = _scrollController.offset;
-
-    double itemWidth = 40.0; // Approximate width of each item, adjust as needed
-    int currentScrollIndex = (offset / itemWidth).round();
-    int currentIndex =
-        _categories!.indexWhere((category) => category.id == widget.categoryId);
-
-    if ((_previousOffset - offset).abs() < 40) {
-      return;
-    }
-
-    if (currentScrollIndex >= 0 && currentScrollIndex < _categories!.length) {
-      if (_previousOffset > offset) {
-        // scroll to left
-        if (currentIndex < currentScrollIndex) {
-          return;
-        }
-      }
-
-      if (_previousOffset <= offset) {
-        if (currentIndex > currentScrollIndex) {
-          return;
-        }
-      }
-
-      setState(() {
-        _previousOffset = offset;
-      });
-      widget.changeCategory(_categories![currentScrollIndex].id!);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCategoryCubit = context.read<CategoryCubit>();
+    //at begining, state(int? / categoryId) = null
+    if (getCategoryCubit.state == null) {
+      getCategoryCubit.getCategory();
     }
   }
 
@@ -70,111 +36,69 @@ class TravelCategoryState extends State<TravelCategory> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CategoryCubit, CategoryState>(
+    return BlocBuilder<CategoryCubit, int?>(
       builder: (context, state) {
-        if (state is CategoryLoading) {
-          return const LoadingIcon(size: 40);
-        }
-
-        if (state is CategorySuccess) {
-          _categories = state.categories;
-
-          if (!_hasInitialized) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              widget.changeCategory(_categories![0].id!);
-              setState(() {
-                _hasInitialized = true;
-              });
-            });
-          }
-
-          return Container(
-            height: 84,
-            padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom:
-                    BorderSide(color: Color.fromARGB(50, 0, 0, 0), width: 1),
-              ),
-            ),
-            child: NotificationListener(
-              onNotification: (ScrollNotification notification) {
-                if (notification is ScrollUpdateNotification) {
-                  _onScroll();
-                }
-                return true;
-              },
-              child: Scrollbar(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _categories!.length,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    var category = _categories![index];
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          widget.changeCategory(category.id!);
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 0, horizontal: 20),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 30,
-                              child: CachedNetworkImage(
-                                imageUrl: category.categoryImage!,
-                                placeholder: (context, url) =>
-                                    const Skeletonizer(
-                                  enabled: true,
-                                  child: Text("Loading..."),
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                color: widget.categoryId == category.id
-                                    ? Colors.black
-                                    : const Color.fromARGB(150, 0, 0, 0),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: widget.categoryId == category.id
-                                      ? const BorderSide(
-                                          color: Colors.black,
-                                          width: 3,
-                                        )
-                                      : BorderSide.none,
-                                ),
-                              ),
-                              child: Text(
-                                category.categoryName!,
-                                style: TextStyle(
-                                  color: widget.categoryId == category.id
-                                      ? Colors.black
-                                      : const Color.fromARGB(150, 0, 0, 0),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
+        if (state == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          _categories = getCategoryCubit.categoryList;
+          return SizedBox(
+            height: 50,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _categories!.length,
+              itemBuilder: (context, index) {
+                var category = _categories![index];
+                return GestureDetector(
+                  onTap: () {
+                    getCategoryCubit.changeCategory(category.id);
                   },
-                ),
-              ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                          child: CachedNetworkImage(
+                            imageUrl: category.categoryImage,
+                            placeholder: (context, url) => const Skeletonizer(
+                              enabled: true,
+                              child: Text("Loading..."),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            color: state == category.id
+                                ? Colors.black
+                                : const Color.fromARGB(150, 0, 0, 0),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: state == category.id
+                                  ? const BorderSide(
+                                      color: Colors.black,
+                                      width: 3,
+                                    )
+                                  : BorderSide.none,
+                            ),
+                          ),
+                          child: Text(_categories![index].categoryName),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           );
         }
-
-        return const Text("Loading...");
       },
     );
   }

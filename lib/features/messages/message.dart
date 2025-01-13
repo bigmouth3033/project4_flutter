@@ -11,6 +11,8 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../shared/bloc/user_cubit/user_cubit.dart';
 import '../../shared/bloc/user_cubit/user_state.dart';
+import 'bloc/message_cubit/add_friend_cubit.dart';
+import 'bloc/message_cubit/search_friend_cubit.dart';
 
 class Message extends StatefulWidget {
   const Message({super.key});
@@ -25,7 +27,14 @@ class _MessageState extends State<Message> {
     return BlocBuilder<UserCubit, UserState>(
       builder: (context, state) {
         if (state is UserSuccess) {
-          return const MessagesBody();
+          return MultiBlocProvider(providers: [
+            BlocProvider(
+              create: (_) => SearchFriendCubit(state.user.id.toString()),
+            ),
+            BlocProvider(
+              create: (_) => AddFriendCubit(),
+            )
+          ], child: const MessagesBody());
         }
 
         if (state is UserLoading) {

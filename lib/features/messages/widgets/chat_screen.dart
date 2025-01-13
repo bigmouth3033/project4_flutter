@@ -49,11 +49,12 @@ class ChatScreenState extends State<ChatScreen> {
     super.initState();
     user = context.read<UserCubit>().loginUser!;
 
-    _scrollController.addListener(() {
+    _scrollController.addListener(() async {
       if (_scrollController.offset <=
               _scrollController.position.minScrollExtent &&
-          !_scrollController.position.outOfRange) {
-        context.read<MessageCubit>().fetchMessages(widget.room.roomId);
+          !_scrollController.position.outOfRange &&
+          !context.read<MessageCubit>().isLoading) {
+        await context.read<MessageCubit>().fetchMessages(widget.room.roomId);
       }
     });
   }

@@ -38,9 +38,15 @@ class _UserLoginState extends State<UserLogin> {
       return 'Password is required';
     }
 
+    if (value.contains(" ")) {
+      return "Password cannot contains space";
+    }
+
     if (value.length < 6) {
       return 'Password length must be equal or larger than 6';
     }
+
+    return null;
   }
 
   void onSubmit() async {
@@ -56,6 +62,10 @@ class _UserLoginState extends State<UserLogin> {
 
       CustomResult customResult = await authenticationApi.loginRequest(body);
 
+      setState(() {
+        _isLoading = false;
+      });
+
       if (customResult.status == 200) {
         var token = customResult.data as String;
         await _tokenStorage.saveToken(token);
@@ -70,6 +80,13 @@ class _UserLoginState extends State<UserLogin> {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const HomeScreen()),
             (route) => false, // Removes all previous routes
+          );
+        }
+      }
+      if (customResult.status == 403) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(customResult.message)),
           );
         }
       }

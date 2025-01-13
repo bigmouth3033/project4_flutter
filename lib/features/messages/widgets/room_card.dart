@@ -22,7 +22,7 @@ class RoomCard extends StatelessWidget {
     ).first;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Color.fromARGB(20, 0, 0, 0), width: 1),

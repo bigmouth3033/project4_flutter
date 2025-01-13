@@ -9,6 +9,7 @@ class UnauthorizeProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        forceMaterialTransparency: true,
         toolbarHeight: 70,
         title: const Text(
           "Your profile",

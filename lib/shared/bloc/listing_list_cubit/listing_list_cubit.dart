@@ -22,7 +22,11 @@ class ListingListCubit extends Cubit<ListingListState> {
   final List<PropertyMinimizeDto> properties = [];
   ListingListCubit() : super(ListingListNotAvailable());
 
-  Future refetch() async {
+  void logout() {
+    emit(ListingListNotAvailable());
+  }
+
+  Future reFetch() async {
     currentPage = 0;
     hasMore = true;
     properties.clear();

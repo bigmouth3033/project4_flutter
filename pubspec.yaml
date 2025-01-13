@@ -68,10 +68,30 @@ dependencies:
   table_calendar: ^3.1.3
   syncfusion_flutter_calendar: ^28.1.37
   syncfusion_flutter_core: ^28.1.37
+  mobile_scanner: ^6.0.2
+  camera: ^0.11.0+2
+  path_provider: ^2.1.5
+  path: ^1.9.0
+  google_sign_in: ^6.2.2
+  sign_in_button: ^3.2.0
+  firebase_auth: ^5.3.4
+  delightful_toast: ^1.1.0
+  flutter_map: ^7.0.2
+  url_launcher: ^6.3.1
+  latlong2: ^0.9.1
+  flutter_map_cancellable_tile_provider: ^3.0.2
+  flutter_map_location_marker: ^9.1.1
+  equatable: ^2.0.7
+  location: ^6.0.2
+  credit_card_form: ^0.0.7
+  flutter_credit_card: ^4.0.1
+
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

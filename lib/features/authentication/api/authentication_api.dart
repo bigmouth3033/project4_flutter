@@ -28,6 +28,19 @@ class AuthenticationApi {
     }
   }
 
+  Future<CustomResult> loginOrSignUpGoogleRequest(
+      Map<String, String> body) async {
+    try {
+      var response =
+          await apiService.post("authCM/login_sign_up_google", body: body);
+      var customResult = CustomResult.fromJson(response);
+      return customResult;
+    } catch (ex) {
+      return CustomResult(
+          status: 999, message: ex.toString(), data: List.empty());
+    }
+  }
+
   Future<CustomResult> registerRequest(Map<String, String> body) async {
     try {
       var response = await apiService.post("authCM/register", body: body);
@@ -44,6 +57,18 @@ class AuthenticationApi {
     try {
       var response = await apiService.post("authCM/create_authentication_code",
           body: body);
+      var customResult = CustomResult.fromJson(response);
+      return customResult;
+    } catch (ex) {
+      return CustomResult(
+          status: 999, message: ex.toString(), data: List.empty());
+    }
+  }
+
+  Future<CustomResult> registerByGoogle(Map<String, String> body) async {
+    try {
+      var response =
+          await apiService.post("authCM/register_by_google", body: body);
       var customResult = CustomResult.fromJson(response);
       return customResult;
     } catch (ex) {

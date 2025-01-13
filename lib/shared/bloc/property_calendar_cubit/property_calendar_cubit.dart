@@ -13,13 +13,114 @@ import '../../../../shared/utils/token_storage.dart';
 import '../../../features/trips/models/trip_count.dart';
 
 class PropertyCalendarCubit extends Cubit<PropertyCalendarState> {
-  int? propertyId;
   bool isLoading = false;
   var tokenStorage = TokenStorage();
   final List<BookingMinimizeDto> bookings = [];
+  PropertyMinimizeDto? property;
   var apiService = ApiService();
+  List<DateTime> selectedDate = [];
+  bool isEditPrice = false;
+
+  void onChangeEditPrice() {
+    isEditPrice = !isEditPrice;
+    emit(ChangeEditPrice());
+  }
 
   PropertyCalendarCubit() : super(PropertyCalendarStateNotAvailable());
+
+  void onChangeSelectedDate(date) {
+    var now = DateTime.now();
+    var nowDate = DateTime(now.year, now.month, now.day);
+
+    if (date!.isBefore(nowDate)) {
+      return;
+    }
+
+    if (selectedDate.contains(date)) {
+      selectedDate.removeWhere(
+        (element) => element.isAtSameMomentAs(date),
+      );
+    } else {
+      selectedDate.add(date);
+    }
+
+    emit(ChangSelectedDate(selectedDate));
+  }
+
+  void clearSelectedDate() {
+    selectedDate.clear();
+    emit(ChangSelectedDate(selectedDate));
+  }
+
+  Future openDate(body) async {
+    try {
+      var token = await tokenStorage.getToken();
+
+      var response = await apiService.put(
+        "listingCM/open_not_available_date_mobile",
+        body: body,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      var customResult = CustomResult.fromJson(response);
+
+      if (customResult.status == 200) {
+        selectedDate.clear();
+        fetchBooking(property!.id);
+      } else {
+        emit(PropertyCalendarStateError('Failed to load posts'));
+      }
+    } catch (ex) {
+      emit(PropertyCalendarStateError(ex.toString()));
+    }
+  }
+
+  Future blockDate(body) async {
+    try {
+      var token = await tokenStorage.getToken();
+
+      var response = await apiService.put(
+        "listingCM/update_not_available_date_mobile",
+        body: body,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      var customResult = CustomResult.fromJson(response);
+
+      if (customResult.status == 200) {
+        selectedDate.clear();
+        fetchBooking(property!.id);
+      } else {
+        emit(PropertyCalendarStateError('Failed to load posts'));
+      }
+    } catch (ex) {
+      emit(PropertyCalendarStateError(ex.toString()));
+    }
+  }
+
+  Future updateExceptionDate(body) async {
+    try {
+      var token = await tokenStorage.getToken();
+
+      var response = await apiService.put(
+        "listingCM/update_exception_date_mobile",
+        body: body,
+        headers: {"Authorization": "Bearer $token"},
+      );
+
+      var customResult = CustomResult.fromJson(response);
+
+      if (customResult.status == 200) {
+        isEditPrice = false;
+        selectedDate.clear();
+        fetchBooking(property!.id);
+      } else {
+        emit(PropertyCalendarStateError('Failed to load posts'));
+      }
+    } catch (ex) {
+      emit(PropertyCalendarStateError(ex.toString()));
+    }
+  }
 
   Future fetchBooking(propertyId) async {
     try {
@@ -43,6 +144,8 @@ class PropertyCalendarCubit extends Cubit<PropertyCalendarState> {
         bookings.addAll((customResult.data as List).map((item) {
           return BookingMinimizeDto.fromJson(item);
         }).toList());
+
+        property = bookings[0].property;
 
         emit(PropertyCalendarFinishLoaded());
       } else {

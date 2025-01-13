@@ -3,11 +3,17 @@ import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/listing_list/listing_list.dart';
-import 'package:project4_flutter/features/authentication/widget/login_security/login_security.dart';
+import 'package:project4_flutter/features/login_security/login_security.dart';
 import 'package:project4_flutter/main.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 import 'package:project4_flutter/shared/models/user.dart';
+import 'package:project4_flutter/shared/widgets/bold_text.dart';
+
+import '../../../shared/bloc/listing_list_cubit/listing_list_cubit.dart';
+import '../../../shared/bloc/message_room_cubit/message_room_cubit.dart';
+import '../../../shared/bloc/reservation_cubit/reservation_cubit.dart';
+import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
 
 class AuthorizeProfile extends StatelessWidget {
   const AuthorizeProfile({super.key});
@@ -68,6 +74,11 @@ class AuthorizeProfile extends StatelessWidget {
                             'token': fcmToken,
                             'userId': user.id
                           };
+                          context.read<MessageRoomCubit>().logout();
+                          context.read<ReservationCubit>().logout();
+                          context.read<TripCubit>().logout();
+                          context.read<ListingListCubit>().logout();
+
                           context.read<UserCubit>().logout(body);
                         },
                         style: TextButton.styleFrom(
@@ -116,6 +127,10 @@ class AuthorizeProfile extends StatelessWidget {
               children: [
                 AdvancedAvatar(
                   name: "user name",
+                  image: user.avatar != null
+                      ? NetworkImage(
+                          user.avatar!) // Assuming cardAvatar is a URL
+                      : null,
                   statusColor: Colors.green,
                   statusAlignment: Alignment.topRight,
                   size: 60,
@@ -130,9 +145,7 @@ class AuthorizeProfile extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      user.firstName,
-                    ),
+                    BoldText(text: user.firstName, fontSize: 15),
                     TextButton(
                       style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(0)),

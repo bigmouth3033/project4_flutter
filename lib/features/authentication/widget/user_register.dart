@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/authentication/api/authentication_api.dart';
 import 'package:project4_flutter/features/authentication/widget/register_modal_bottom.dart';
 import 'package:project4_flutter/shared/widgets/custom_input_form.dart';
 import 'package:project4_flutter/shared/widgets/red_button.dart';
 
+import '../../../shared/bloc/user_cubit/user_cubit.dart';
+import '../../profile/profile.dart';
+
 var format = DateFormat('yyyy-MM-dd');
 
 class UserRegister extends StatefulWidget {
-  const UserRegister(this.email, {super.key});
+  const UserRegister(this.email, {super.key, required this.isGoogle});
 
   final String? email;
+  final bool isGoogle;
 
   @override
   State<UserRegister> createState() => _UserRegisterState();
@@ -101,22 +106,51 @@ class _UserRegisterState extends State<UserRegister> {
 
   void onSubmit() async {
     if (_formKey.currentState!.validate()) {
-      var customResult = await authenticationApi.createAuthenticationRequest(
-          {'email': _emailController.text.toString()});
+      if (widget.isGoogle == false) {
+        var customResult = await authenticationApi.createAuthenticationRequest(
+            {'email': _emailController.text.toString()});
 
-      if (customResult.status == 200) {
-        if (mounted) {
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return RegisterModalBottom(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                  dateOfBirth: _dateBirthController.text,
-                  firstName: _firstNameController.text,
-                  lastName: _lastNameController.text);
-            },
-          );
+        if (customResult.status == 200) {
+          if (mounted) {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return RegisterModalBottom(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                    dateOfBirth: _dateBirthController.text,
+                    firstName: _firstNameController.text,
+                    lastName: _lastNameController.text);
+              },
+            );
+          }
+        }
+      } else {
+        final body = <String, String>{};
+
+        body['email'] = _emailController.text;
+        body['password'] = _passwordController.text;
+        body['dob'] = _dateBirthController.text;
+        body['firstName'] = _firstNameController.text;
+        body['lastName'] = _lastNameController.text;
+
+        var customResult = await authenticationApi.registerByGoogle(body);
+
+        if (customResult.status == 200) {
+          if (mounted) {
+            context.read<UserCubit>().initializeUser();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Success")),
+            );
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => const Profile(),
+              ),
+              (route) => false, // Removes all previous routes
+            );
+          }
         }
       }
     }
@@ -126,6 +160,7 @@ class _UserRegisterState extends State<UserRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        forceMaterialTransparency: true,
         bottom: PreferredSize(
           preferredSize:
               const Size.fromHeight(1.0), // Set the height of the border
@@ -269,6 +304,7 @@ class _UserRegisterState extends State<UserRegister> {
                 ),
                 RichText(
                   text: const TextSpan(
+                    style: TextStyle(color: Colors.black, height: 1.3),
                     children: [
                       TextSpan(text: "By selecting "),
                       TextSpan(

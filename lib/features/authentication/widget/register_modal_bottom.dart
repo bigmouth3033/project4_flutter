@@ -98,51 +98,54 @@ class _RegisterModalBottomState extends State<RegisterModalBottom> {
           icon: const Icon(Icons.close),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Enter your verification code",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              "Enter the code we emailed to ${widget.email}",
-              style: const TextStyle(fontSize: 20),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Pinput(
-              length: 6,
-              onCompleted: onFinish,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Didn't get the email? ",
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  TextSpan(
-                    text: "Try again",
-                    recognizer: TapGestureRecognizer()..onTap = onRetry,
-                    style: const TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Enter your verification code",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
               ),
-            )
-          ],
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                "Enter the code we emailed to ${widget.email}",
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Pinput(
+                length: 6,
+                onCompleted: onFinish,
+                keyboardType: TextInputType.text,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: "Didn't get the email? ",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    TextSpan(
+                      text: "Try again",
+                      recognizer: TapGestureRecognizer()..onTap = onRetry,
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

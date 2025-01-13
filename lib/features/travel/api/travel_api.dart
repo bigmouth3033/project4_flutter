@@ -1,5 +1,5 @@
 import 'package:project4_flutter/shared/api/api_service.dart';
-import 'package:project4_flutter/shared/models/category.dart';
+import '../../../shared/models/category.dart';
 import '../../../shared/models/custom_result.dart';
 
 class TravelApi {

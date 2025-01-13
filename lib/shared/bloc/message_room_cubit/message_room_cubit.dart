@@ -8,11 +8,17 @@ import '../../models/custom_result.dart';
 class MessageRoomCubit extends Cubit<MessageRoomState> {
   String? userId;
 
+  List<Room> roomList = [];
+
   MessageRoomCubit() : super(MessageRoomNotAvailable());
 
-  void loadUserRoom(String id) {
+  Future loadUserRoom(String id) async {
     userId = id;
-    getRooms();
+    await getRooms();
+  }
+
+  void logout() {
+    emit(MessageRoomNotAvailable());
   }
 
   var apiService = ApiService();
@@ -21,8 +27,13 @@ class MessageRoomCubit extends Cubit<MessageRoomState> {
     emit(MessageRoomLoading());
     try {
       Map<String, dynamic> params = {'userId': userId};
-      var response =
-          await apiService.get("/chat/get_chat_room", params: params);
+
+      Map<String, String> headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+      };
+
+      var response = await apiService.get("/chat/get_chat_room",
+          params: params, headers: headers);
 
       var customResult = CustomResult.fromJson(response);
 
@@ -30,10 +41,10 @@ class MessageRoomCubit extends Cubit<MessageRoomState> {
         var rooms = (customResult.data as List).map((item) {
           return Room.fromJson(item);
         }).toList();
+        roomList.clear();
+        roomList.addAll(rooms);
 
         emit(MessageRoomSuccess(rooms));
-
-        print(rooms);
 
         return rooms;
       }

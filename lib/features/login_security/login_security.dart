@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/qr_scanner/qr_scanner.dart';
 
 class LoginSecurity extends StatelessWidget {
   const LoginSecurity({super.key});
@@ -90,7 +91,14 @@ class LoginSecurity extends StatelessWidget {
                     ],
                   ),
                   IconButton(
-                    onPressed: () async {},
+                    onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const QrScanner(),
+                        ),
+                      );
+                    },
                     icon: const HugeIcon(
                       icon: HugeIcons.strokeRoundedQrCode,
                       color: Colors.black,

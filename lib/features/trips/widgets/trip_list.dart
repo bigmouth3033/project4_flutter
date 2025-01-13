@@ -45,7 +45,8 @@ class TripListState extends State<TripList> {
 
   void _myScrollListener() {
     if (_myController.offset >= _myController.position.maxScrollExtent &&
-        !_myController.position.outOfRange) {
+        !_myController.position.outOfRange &&
+        getTripCubit().isLoading == false) {
       getTripCubit().getBookingList();
     }
   }
@@ -88,11 +89,16 @@ class TripListState extends State<TripList> {
     return "";
   }
 
+  Future refresh() async {
+    await getTripCubit().updateStatus(getTripCubit().currentStatus!);
+    await getTripCubit().getBookingCount();
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        return getTripCubit().updateStatus(getTripCubit().currentStatus!);
+        return refresh();
       },
       child: BlocBuilder<TripCubit, TripState>(
         builder: (context, tripState) {

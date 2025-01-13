@@ -41,6 +41,11 @@ class ReservationCubit extends Cubit<ReservationState> {
     await getBookingList();
   }
 
+  void logout() {
+    reservationCount = null;
+    emit(ReservationNotAvailable());
+  }
+
   Future getBookingCount() async {
     try {
       Map<String, dynamic> params = {

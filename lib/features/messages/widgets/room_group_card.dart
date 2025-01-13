@@ -20,7 +20,7 @@ class RoomGroupCard extends StatelessWidget {
     final chatUser = room.users;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Color.fromARGB(20, 0, 0, 0), width: 1),
@@ -50,7 +50,7 @@ class RoomGroupCard extends StatelessWidget {
                     image: chatUser[index].avatar != null
                         ? NetworkImage(chatUser[index].avatar!)
                         : null,
-                    size: 30,
+                    size: 40,
                     child: Text(
                       user.firstName![0],
                       style: const TextStyle(color: Colors.white),
@@ -66,6 +66,9 @@ class RoomGroupCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(
+                height: 10,
+              ),
               Text(
                 "${room.name}",
                 style: const TextStyle(
@@ -99,10 +102,13 @@ class RoomGroupCard extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Text(format.format(room.lastestMessageDate),
-              style: const TextStyle(
-                color: Colors.black,
-              ))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(format.format(room.lastestMessageDate),
+                style: const TextStyle(
+                  color: Colors.black,
+                )),
+          )
         ],
       ),
     );

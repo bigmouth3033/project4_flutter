@@ -18,6 +18,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      locale: const Locale('vi', 'VN'),
       theme: ThemeData(
         textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
       ),

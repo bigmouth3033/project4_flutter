@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 
 abstract class PropertyCalendarState {}
 
+class ChangSelectedDate extends PropertyCalendarState {
+  final List<DateTime> selectedDate;
+
+  ChangSelectedDate(this.selectedDate);
+}
+
+class ChangeEditPrice extends PropertyCalendarState {}
+
 class PropertyCalendarFinishLoaded extends PropertyCalendarState {}
 
 class PropertyCalendarLoading extends PropertyCalendarState {}

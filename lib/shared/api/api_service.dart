@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "192.168.1.4:8080";
+  final String baseUrl = "192.168.1.193:8080";
 
   ApiService();
 
@@ -17,7 +17,9 @@ class ApiService {
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final responseBody = utf8.decode(response.bodyBytes);
+      final jsonResponse = jsonDecode(responseBody);
+      return jsonResponse;
     } else {
       throw Exception("Failed to load data");
     }
@@ -60,13 +62,23 @@ class ApiService {
       {required Map<String, dynamic> body,
       Map<String, String>? headers}) async {
     var uri = Uri.http(baseUrl, endpoint);
-    final request = http.MultipartRequest('POST', uri);
+    final request = http.MultipartRequest('PUT', uri);
 
     if (headers != null) {
       request.headers.addAll(headers);
     }
 
-    body.forEach((key, value) => request.fields[key] = value);
+    body.forEach((key, value) {
+      if (value != null) {
+        if (value is List) {
+          for (int i = 0; i < value.length; i++) {
+            request.fields['$key[$i]'] = value[i].toString();
+          }
+        } else {
+          request.fields[key] = value.toString();
+        }
+      }
+    });
 
     var response = await request.send();
 

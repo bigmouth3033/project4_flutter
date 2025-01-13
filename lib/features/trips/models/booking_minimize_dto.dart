@@ -26,6 +26,8 @@ class BookingMinimizeDto {
   Customer customer;
   List<Transaction> transactions;
   List<BookDateDetail> bookDateDetails;
+  double websiteFee;
+  double hostFee;
 
   BookingMinimizeDto({
     required this.id,
@@ -47,6 +49,8 @@ class BookingMinimizeDto {
     required this.userReview,
     required this.host,
     required this.amount,
+    required this.websiteFee,
+    required this.hostFee,
     required this.bookingCode,
     required this.customer,
     required this.transactions,
@@ -78,6 +82,8 @@ class BookingMinimizeDto {
             : null,
         host: Customer.fromJson(json["host"]),
         amount: json["amount"],
+        websiteFee: json["websiteFee"],
+        hostFee: json["hostFee"],
         bookingCode: json["bookingCode"],
         customer: Customer.fromJson(json["customer"]),
         transactions: List<Transaction>.from(
@@ -265,8 +271,8 @@ class PropertyMinimizeDto {
   PropertyCategory propertyCategory;
   dynamic instantBookRequirement;
   List<String> propertyImages;
-  List<dynamic> propertyNotAvailableDates;
-  List<dynamic> propertyExceptionDates;
+  List<PropertyNotAvailableDate> propertyNotAvailableDates;
+  List<PropertyExceptionDate> propertyExceptionDates;
   List<PropertyAmenity> propertyAmenities;
   bool smokingAllowed;
   bool petAllowed;
@@ -355,10 +361,12 @@ class PropertyMinimizeDto {
         propertyCategory: PropertyCategory.fromJson(json["propertyCategory"]),
         instantBookRequirement: json["instantBookRequirement"],
         propertyImages: List<String>.from(json["propertyImages"].map((x) => x)),
-        propertyNotAvailableDates:
-            List<dynamic>.from(json["propertyNotAvailableDates"].map((x) => x)),
-        propertyExceptionDates:
-            List<dynamic>.from(json["propertyExceptionDates"].map((x) => x)),
+        propertyNotAvailableDates: List<PropertyNotAvailableDate>.from(
+            json["propertyNotAvailableDates"]
+                .map((x) => PropertyNotAvailableDate.fromJson(x))),
+        propertyExceptionDates: List<PropertyExceptionDate>.from(
+            json["propertyExceptionDates"]
+                .map((x) => PropertyExceptionDate.fromJson(x))),
         propertyAmenities: List<PropertyAmenity>.from(
             json["propertyAmenities"].map((x) => PropertyAmenity.fromJson(x))),
         smokingAllowed: json["smokingAllowed"],
@@ -413,6 +421,44 @@ class PropertyMinimizeDto {
         "petAllowed": petAllowed,
         "selfCheckIn": selfCheckIn,
       };
+}
+
+class PropertyExceptionDate {
+  int id;
+  DateTime date;
+  double basePrice;
+
+  PropertyExceptionDate({
+    required this.id,
+    required this.date,
+    required this.basePrice,
+  });
+
+  factory PropertyExceptionDate.fromJson(Map<String, dynamic> json) =>
+      PropertyExceptionDate(
+        id: json["id"],
+        date: DateTime.parse(json["date"]).toLocal(),
+        basePrice: json["basePrice"],
+      );
+}
+
+class PropertyNotAvailableDate {
+  int id;
+  DateTime date;
+  int? propertyId;
+
+  PropertyNotAvailableDate({
+    required this.id,
+    required this.date,
+    this.propertyId,
+  });
+
+  factory PropertyNotAvailableDate.fromJson(Map<String, dynamic> json) =>
+      PropertyNotAvailableDate(
+        id: json["id"],
+        date: DateTime.parse(json["date"]).toLocal(),
+        propertyId: json["propertyId"],
+      );
 }
 
 class ManagedCity {

@@ -1,13 +1,10 @@
-import '../../models/category.dart';
-
 abstract class CategoryState {}
+
+class CategoryNotAvailable extends CategoryState {}
 
 class CategoryLoading extends CategoryState {}
 
-class CategorySuccess extends CategoryState {
-  final List<Category>? categories;
-  CategorySuccess(this.categories);
-}
+class CategorySuccess extends CategoryState {}
 
 class CategoryError extends CategoryState {
   final String message;

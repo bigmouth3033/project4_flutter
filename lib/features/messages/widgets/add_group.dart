@@ -63,7 +63,7 @@ class _AddGroupState extends State<AddGroup> {
           "Add new Group",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        toolbarHeight: 100,
+        // toolbarHeight: 100,
         bottom: PreferredSize(
           preferredSize:
               const Size.fromHeight(1.0), // Set the height of the border

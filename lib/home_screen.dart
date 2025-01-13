@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/favourite/favourite.dart';
 import 'package:provider/provider.dart';
-
-import 'features/favorites/favorites.dart';
 import 'features/messages/message.dart';
 import 'features/profile/profile.dart';
 import 'features/travel/travel.dart';
@@ -24,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     const Travel(),
-    const Favorites(),
+    const Favourite(),
     const Trip(),
     const Message(),
     const Profile()
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Colors.black,
               size: 25.0,
             ),
-            label: "Travel",
+            label: "Explore",
           ),
           const BottomNavigationBarItem(
             activeIcon: HugeIcon(

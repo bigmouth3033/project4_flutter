@@ -23,6 +23,11 @@ class TripCubit extends Cubit<TripState> {
   final List<BookingMinimizeDto> bookingList = [];
   TripCubit() : super(TripNotAvailable());
 
+  void logout() {
+    tripCount = null;
+    emit(TripNotAvailable());
+  }
+
   void updateDateRange(DateTimeRange selectedDateRange) async {
     currentPage = 0;
     hasMore = true;

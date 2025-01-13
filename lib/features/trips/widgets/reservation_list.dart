@@ -44,7 +44,8 @@ class ReservationListState extends State<ReservationList> {
 
   void _myScrollListener() {
     if (_myController.offset >= _myController.position.maxScrollExtent &&
-        !_myController.position.outOfRange) {
+        !_myController.position.outOfRange &&
+        !getReservationCubit().isLoading) {
       getReservationCubit().getBookingList();
     }
   }

@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:animated_search_bar/animated_search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/property_calendar/property_calendar.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
 import 'package:project4_flutter/shared/bloc/listing_list_cubit/listing_list_cubit.dart';
 import 'package:project4_flutter/shared/bloc/listing_list_cubit/listing_list_state.dart';
+import 'package:project4_flutter/shared/bloc/property_calendar_cubit/property_calendar_cubit.dart';
 import 'package:project4_flutter/shared/models/dchc_dto.dart';
 
 import '../../main.dart';
@@ -46,7 +43,7 @@ class _ListingListState extends State<ListingList> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        return getListingCubit().refetch();
+        return getListingCubit().reFetch();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -85,6 +82,7 @@ class _ListingListState extends State<ListingList> {
                 .toList();
 
             return SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -124,8 +122,11 @@ class _ListingListState extends State<ListingList> {
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
-                                  return PropertyCalendar(
-                                    propertyId: e.id,
+                                  return BlocProvider(
+                                    create: (_) => PropertyCalendarCubit(),
+                                    child: PropertyCalendar(
+                                      propertyId: e.id,
+                                    ),
                                   );
                                 },
                               ));

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:delightful_toast/delight_toast.dart';
+import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -24,10 +26,13 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../shared/models/user.dart';
+import '../bloc/message_cubit/add_friend_state.dart';
 import '../models/room.dart';
 
 class MessagesBody extends StatefulWidget {
-  const MessagesBody({super.key});
+  const MessagesBody({super.key, this.userId});
+
+  final int? userId;
 
   @override
   State<MessagesBody> createState() => _MessagesBodyState();
@@ -50,12 +55,10 @@ class _MessagesBodyState extends State<MessagesBody> {
     try {
       stompClient = StompClient(
         config: StompConfig.sockJS(
-          url: 'http://192.168.1.4:8010/ws', // WebSocket endpoint
+          url: 'http://192.168.1.193:8010/ws', // WebSocket endpoint
           onConnect: (StompFrame frame) {
             print("Connected to WebSocket");
             isConnected = true;
-
-            // Subscribe to the private channel
             stompClient?.subscribe(
               destination: '/user/$userId/private',
               callback: (StompFrame message) {
@@ -141,9 +144,7 @@ class _MessagesBodyState extends State<MessagesBody> {
 
     user = context.read<UserCubit>().loginUser!;
 
-    if (getMessageRoomCubit().state is MessageRoomNotAvailable) {
-      getMessageRoomCubit().loadUserRoom(user.id.toString());
-    }
+    getMessageRoomCubit().loadUserRoom(user.id.toString());
 
     connect(user.id.toString());
   }
@@ -181,169 +182,222 @@ class _MessagesBodyState extends State<MessagesBody> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          toolbarHeight: 70,
-          title: const Text(
-            "Messages",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return MultiProvider(providers: [
-                        BlocProvider(
-                          create: (_) => SearchFriendCubit(user.id.toString()),
-                        ),
-                        BlocProvider(
-                          create: (_) => AddFriendCubit(),
-                        )
-                      ], child: const AddFriend());
-                    },
-                  )).then((roomId) {
-                    if (context.mounted && roomId != null) {
-                      if (context.mounted) {
-                        setState(() {
-                          chosenRoomId = roomId;
-                        });
-                        context.read<MessageRoomCubit>().getRooms();
-                      }
-                    }
-                  });
-                },
-                icon: const HugeIcon(
-                  icon: HugeIcons.strokeRoundedAddSquare,
-                  color: Colors.black,
-                  size: 24.0,
-                )),
-            IconButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return MultiProvider(providers: [
-                        BlocProvider(
-                          create: (_) => SearchGroupCubit(user.id.toString()),
-                        ),
-                        BlocProvider(
-                          create: (_) => AddGroupCubit(),
-                        )
-                      ], child: const AddGroup());
-                    },
-                  )).then((roomId) {
-                    if (context.mounted && roomId != null) {
-                      if (context.mounted) {
-                        setState(() {
-                          chosenRoomId = roomId;
-                        });
-                        context.read<MessageRoomCubit>().getRooms();
-                      }
-                    }
-                  });
-                },
-                icon: const HugeIcon(
-                  icon: HugeIcons.strokeRoundedAddTeam,
-                  color: Colors.black,
-                  size: 24.0,
-                )),
-            const SizedBox(
-              width: 20,
-            )
-          ],
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        toolbarHeight: 70,
+        title: const Text(
+          "Messages",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: BlocConsumer<MessageRoomCubit, MessageRoomState>(
-          builder: (context, state) {
-            if (state is MessageRoomLoading) {
-              return const LoadingIcon(size: 60);
-            }
-
-            if (state is MessageRoomSuccess) {
-              _listRoom = state.roomList;
-
-              return ListView.builder(
-                itemCount: _listRoom!.length,
-                itemBuilder: (context, index) {
-                  var room = _listRoom![index];
-                  if (room.name == null || room.name!.isEmpty) {
-                    return TextButton(
-                        style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10)),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return BlocProvider(
-                                  create: (_) => MessageCubit(room.roomId),
-                                  child: ChatScreen(
-                                      key: _globalKey,
-                                      _listRoom![index],
-                                      sendPrivateMessage));
-                            },
-                          )).then((_) {
-                            if (context.mounted) {
-                              context.read<MessageRoomCubit>().getRooms();
-                            }
-                          });
-                        },
-                        child: RoomCard(room, user));
-                  } else {
-                    return TextButton(
-                        style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 10)),
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return BlocProvider(
-                                  create: (_) => MessageCubit(room.roomId),
-                                  child: ChatScreen(
-                                      key: _globalKey,
-                                      _listRoom![index],
-                                      sendPrivateMessage));
-                            },
-                          )).then((_) {
-                            if (context.mounted) {
-                              context.read<MessageRoomCubit>().getRooms();
-                            }
-                          });
-                        },
-                        child: RoomGroupCard(room, user));
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return const AddFriend();
+                  },
+                )).then((roomId) {
+                  if (context.mounted && roomId != null) {
+                    if (context.mounted) {
+                      setState(() {
+                        chosenRoomId = roomId;
+                      });
+                      context.read<MessageRoomCubit>().getRooms();
+                    }
                   }
-                },
-              );
-            }
+                });
+              },
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedAddSquare,
+                color: Colors.black,
+                size: 24.0,
+              )),
+          IconButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) {
+                    return MultiProvider(providers: [
+                      BlocProvider(
+                        create: (_) => SearchGroupCubit(user.id.toString()),
+                      ),
+                      BlocProvider(
+                        create: (_) => AddGroupCubit(),
+                      )
+                    ], child: const AddGroup());
+                  },
+                )).then((roomId) {
+                  if (context.mounted && roomId != null) {
+                    if (context.mounted) {
+                      setState(() {
+                        chosenRoomId = roomId;
+                      });
+                      context.read<MessageRoomCubit>().getRooms();
+                    }
+                  }
+                });
+              },
+              icon: const HugeIcon(
+                icon: HugeIcons.strokeRoundedAddTeam,
+                color: Colors.black,
+                size: 24.0,
+              )),
+          const SizedBox(
+            width: 20,
+          )
+        ],
+      ),
+      body: BlocConsumer<MessageRoomCubit, MessageRoomState>(
+        builder: (context, state) {
+          if (state is MessageRoomLoading) {
+            return const LoadingIcon(size: 60);
+          }
 
-            if (state is MessageRoomError) {
-              return Text(state.message);
-            }
+          if (state is MessageRoomSuccess) {
+            _listRoom = state.roomList;
 
-            return const Text("Loading...");
-          },
-          listener: (context, state) {
-            if (state is MessageRoomSuccess && chosenRoomId != null) {
+            return ListView.builder(
+              itemCount: _listRoom!.length,
+              itemBuilder: (context, index) {
+                var room = _listRoom![index];
+                if (room.name == null || room.name!.isEmpty) {
+                  return InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return BlocProvider(
+                                create: (_) => MessageCubit(room.roomId),
+                                child: ChatScreen(
+                                    key: _globalKey,
+                                    _listRoom![index],
+                                    sendPrivateMessage));
+                          },
+                        )).then((_) {
+                          if (context.mounted) {
+                            context.read<MessageRoomCubit>().getRooms();
+                          }
+                        });
+                      },
+                      splashColor:
+                          Colors.blue.withOpacity(0.3), // Ripple effect color
+                      highlightColor: Colors.blue.withOpacity(0.1),
+                      child: RoomCard(room, user));
+                } else {
+                  return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return BlocProvider(
+                                create: (_) => MessageCubit(room.roomId),
+                                child: ChatScreen(
+                                  key: _globalKey,
+                                  _listRoom![index],
+                                  sendPrivateMessage,
+                                ),
+                              );
+                            },
+                          ),
+                        ).then((_) {
+                          if (context.mounted) {
+                            context.read<MessageRoomCubit>().getRooms();
+                          }
+                        });
+                      },
+                      splashColor:
+                          Colors.blue.withOpacity(0.3), // Ripple effect color
+                      highlightColor: Colors.blue.withOpacity(0.1),
+                      child: RoomGroupCard(room, user));
+                }
+              },
+            );
+          }
+
+          if (state is MessageRoomError) {
+            return Text(state.message);
+          }
+
+          return const Text("Loading...");
+        },
+        listener: (context, state) {
+          if (state is MessageRoomSuccess) {
+            if (widget.userId != null) {
+              var room = state.roomList!
+                  .where(
+                    (room) =>
+                        room.name == null &&
+                        room.users
+                            .where(
+                              (element) => element.id == widget.userId,
+                            )
+                            .isNotEmpty,
+                  )
+                  .firstOrNull;
+              if (room != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return BlocProvider(
+                        create: (_) => MessageCubit(room.roomId),
+                        child: ChatScreen(
+                          key: _globalKey,
+                          state.roomList!.firstWhere(
+                            (element) => element.roomId == room.roomId,
+                          ),
+                          sendPrivateMessage,
+                        ),
+                      );
+                    },
+                  ),
+                ).then(
+                  (_) {
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                );
+              } else {
+                Map<String, dynamic> body = {
+                  'userId': context.read<UserCubit>().loginUser!.id,
+                  'friendId': widget.userId
+                };
+                context.read<AddFriendCubit>().addFriend(body).then(
+                      (_) => getMessageRoomCubit()
+                          .loadUserRoom(user.id.toString()),
+                    );
+              }
+            }
+            if (chosenRoomId != null) {
               var room = chosenRoomId;
               setState(() {
                 chosenRoomId = null;
               });
-              Navigator.push(context, MaterialPageRoute(
-                builder: (context) {
-                  return BlocProvider(
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return BlocProvider(
                       create: (_) => MessageCubit(room!),
                       child: ChatScreen(
-                          key: _globalKey,
-                          state.roomList!.firstWhere(
-                            (element) => element.roomId == room,
-                          ),
-                          sendPrivateMessage));
-                },
-              )).then((_) {
+                        key: _globalKey,
+                        state.roomList!.firstWhere(
+                          (element) => element.roomId == room,
+                        ),
+                        sendPrivateMessage,
+                      ),
+                    );
+                  },
+                ),
+              ).then((_) {
                 if (context.mounted) {
                   context.read<MessageRoomCubit>().getRooms();
                 }
               });
             }
-          },
-        ));
+          }
+        },
+      ),
+    );
   }
 }
