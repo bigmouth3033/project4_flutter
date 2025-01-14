@@ -60,7 +60,7 @@ class BookingCubit extends Cubit<BookingState> {
     try {
       ApiService apiService = ApiService();
       final response =
-          await apiService.post("bookingCM/add", body: booking.toJson());
+      await apiService.post("bookingCM/add", body: booking.toJson());
       final customResult = CustomResult.fromJson(response);
       if (customResult.status == 200) {
         final booking = Booking.fromJson(customResult.data);
