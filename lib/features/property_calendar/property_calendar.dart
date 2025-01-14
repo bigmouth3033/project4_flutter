@@ -427,6 +427,7 @@ class _PropertyCalendarState extends State<PropertyCalendar> {
                     width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
                         border: Border.all(
+
                             color: Colors.black.withValues(alpha: 0.4),
                             width: 1),
                         borderRadius: BorderRadius.circular(25)),

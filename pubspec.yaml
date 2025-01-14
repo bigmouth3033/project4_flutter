@@ -84,7 +84,7 @@ dependencies:
   equatable: ^2.0.7
   location: ^6.0.2
   credit_card_form: ^0.0.7
-  flutter_credit_card: ^4.0.1
+#  flutter_credit_card: ^4.0.1
 
 
 
@@ -92,6 +92,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.2
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.jpg"
+  remove_alpha_ios: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

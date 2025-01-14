@@ -109,6 +109,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                     return Scaffold(
                       backgroundColor: Colors.white,
                       body: SingleChildScrollView(
+                        physics: AlwaysScrollableScrollPhysics(),
                         child: Column(
                           children: [
                             buildPropertyImagesView(propertyState),
@@ -169,6 +170,8 @@ class _PropertyDetailState extends State<PropertyDetail> {
           builder: (context, state) {
         final startDate = context.read<DateBookingCubit>().startDate;
         final endDate = context.read<DateBookingCubit>().endDate;
+
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -226,15 +229,75 @@ class _PropertyDetailState extends State<PropertyDetail> {
                     if (state is UserSuccess) {
                       userBooking = state.user;
                     }
+                    List<ExceptionDate> showExceptionDates(DateTime? startDate,
+                        DateTime? endDate, List<ExceptionDate> exceptionDates) {
+                      List<ExceptionDate> dateListReturn = [];
+                      List<DateTime> dateList = [];
+                      while (startDate!.isBefore(endDate!) ||
+                          startDate.isAtSameMomentAs(endDate)) {
+                        dateList.add(startDate);
+                        startDate = startDate.add(const Duration(days: 1));
+                      }
+                      for (var date in dateList) {
+                        for (var exDate in exceptionDates) {
+                          if (isSameDate(date, exDate.date)) {
+                            dateListReturn.add(exDate);
+                          }
+                        }
+                      }
+                      dateListReturn.sort((a, b) => a.date.compareTo(b.date));
+                      return dateListReturn;
+                    }
+
+                    double calculate_total_base_price(DateTime? startDate,
+                        DateTime? endDate, List<ExceptionDate> exceptionDates) {
+                      DateTime? tempStart = startDate;
+                      DateTime? tempEnd = endDate;
+                      List<DateTime> dateList = [];
+                      while (startDate!.isBefore(endDate!) ||
+                          startDate.isAtSameMomentAs(endDate)) {
+                        dateList.add(startDate);
+                        startDate = startDate.add(const Duration(days: 1));
+                      }
+                      int nightBase = dateList.length -
+                          showExceptionDates(tempStart, tempEnd, exceptionDates).length;
+                      double basePriceTotal = nightBase * propertyState.property.basePrice;
+                      double exceptionPriceTotal = 0;
+                      for (var date
+                      in showExceptionDates(tempStart, tempEnd, exceptionDates)) {
+                        exceptionPriceTotal += date.basePrice;
+                      }
+                      return basePriceTotal + exceptionPriceTotal;
+                    }
+                    double totalBasePrice;
+                    List<ExceptionDate>? exceptionDates = propertyState.property.exceptionDates;
+                    if (exceptionDates == null) {
+                      totalBasePrice = (endDate!.difference(startDate!).inDays + 1) *
+                          propertyState.property.basePrice;
+                    } else {
+                      totalBasePrice = calculate_total_base_price(
+                          startDate, endDate, exceptionDates);
+                    }
+                    double discount = 0;
+                    if (endDate!.difference(startDate!).inDays + 1 >= 28) {
+                      discount = totalBasePrice * propertyState.property.monthlyDiscount / 100;
+                    } else if (endDate.difference(startDate).inDays + 1 >= 7 &&
+                        endDate.difference(startDate).inDays + 1 < 28) {
+                      discount = totalBasePrice * propertyState.property.weeklyDiscount / 100;
+                    }
+                    print("totalBasePrice: " + totalBasePrice.toString());
+                    print("hostFee: " + ((totalBasePrice - discount)*0.9).toString());
+                    print("websiteFee: " + ((totalBasePrice - discount)*0.05).toString());
+                    print("amount: " + ((totalBasePrice - discount)*1.05).toString());
                     final booking = BookingDto(
                       children: guestBooking.children,
                       adult: guestBooking.adult,
-                      hostFee: 12,
-                      websiteFee: 13,
+                      hostFee: double.parse(((totalBasePrice - discount)*0.9).toStringAsFixed(2)),
+                      websiteFee: double.parse(((totalBasePrice - discount)*0.05).toStringAsFixed(2)),
                       customerId: userBooking?.id,
                       hostId: propertyState.property.userId,
                       propertyId: propertyState.property.id,
-                      amount: 244,
+                      amount: double.parse(((totalBasePrice - discount)*1.05).toStringAsFixed(2)),
                       checkInDay: datesCubit.startDate!,
                       checkOutDay:
                           datesCubit.endDate!.add(const Duration(days: 1)),
@@ -292,14 +355,13 @@ class _PropertyDetailState extends State<PropertyDetail> {
             else
               ElevatedButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return DatePickerModal(
-                          startArv: startArv, propertyId: widget.propertyId);
-                    },
-                  );
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => DatePickerModal(
+                              startArv: startArv,
+                              propertyId: widget.propertyId)));
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF0000),
@@ -881,16 +943,21 @@ class _PropertyDetailState extends State<PropertyDetail> {
       final endDate = context.read<DateBookingCubit>().endDate;
       return ElevatedButton(
           onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (BuildContext context) {
-                return DatePickerModal(
-                  startArv: startArv,
-                  propertyId: widget.propertyId,
-                );
-              },
-            );
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DatePickerModal(
+                        startArv: startArv, propertyId: widget.propertyId)));
+            // showModalBottomSheet(
+            //   context: context,
+            //   isScrollControlled: true,
+            //   builder: (BuildContext context) {
+            //     return DatePickerModal(
+            //       startArv: startArv,
+            //       propertyId: widget.propertyId,
+            //     );
+            //   },
+            // );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Màu nền

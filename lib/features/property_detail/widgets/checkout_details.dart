@@ -290,16 +290,14 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                                 const Spacer(),
                                 TextButton(
                                   onPressed: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      builder: (BuildContext context) {
-                                        return DatePickerModal(
-                                          startArv: startArv,
-                                          propertyId: widget.propertyId,
-                                        );
-                                      },
-                                    );
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DatePickerModal(
+                                                    startArv: startArv,
+                                                    propertyId:
+                                                        widget.propertyId)));
                                   },
                                   style: TextButton.styleFrom(
                                     backgroundColor: Colors.blue, // Màu nền
@@ -337,7 +335,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                               awaitBooking = true;
                             });
 
-                            createBooking(context);
+                            createBooking(context , discount,totalBasePrice);
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: const Color(0xFFFF0000),
@@ -368,7 +366,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     );
   }
 
-  Future<void> createBooking(BuildContext context) async {
+  Future<void> createBooking(BuildContext context, double discount , double totalBasePrice) async {
     final bookingCubit = context.read<BookingCubit>();
     final datesCubit = context.read<DateBookingCubit>();
     final guestBooking = context.read<GuestBookingCubit>();
@@ -377,15 +375,17 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     if (state is UserSuccess) {
       userBooking = state.user;
     }
+
+
     final booking = BookingDto(
       children: guestBooking.children,
       adult: guestBooking.adult,
-      hostFee: 12,
-      websiteFee: 13,
+      hostFee: double.parse(((totalBasePrice - discount)*0.9).toStringAsFixed(2)),
+      websiteFee:double.parse(( (totalBasePrice - discount) *0.05).toStringAsFixed(2)),
       customerId: userBooking?.id,
       hostId: getProperty().userId,
       propertyId: getProperty().id,
-      amount: 244,
+      amount: double.parse(((totalBasePrice - discount) * 1.05).toStringAsFixed(2)),
       checkInDay: datesCubit.startDate!,
       checkOutDay: datesCubit.endDate!.add(const Duration(days: 1)),
     );

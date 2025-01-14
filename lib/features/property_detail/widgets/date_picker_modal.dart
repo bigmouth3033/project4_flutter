@@ -136,6 +136,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
             return Scaffold(
               backgroundColor: Colors.white,
               body: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(10, 30, 10, 30),
                   child: Column(
@@ -265,7 +266,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                               getProperty().maximumStay!) {
                                         violatesStayLimit = true;
                                         showErrorDialog(context,
-                                            'The stay duration cannot exceed $getProperty().maximumStay nights.');
+                                            'The stay duration cannot exceed ${getProperty().maximumStay} nights.');
                                       }
 
                                       if (getProperty().minimumStay != null &&
