@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:project4_flutter/features/trips/widgets/refund_list.dart';
 import 'package:project4_flutter/features/trips/widgets/reservation_list.dart';
 import 'package:project4_flutter/features/trips/widgets/trip_list.dart';
+import 'package:project4_flutter/shared/bloc/refund_list_cubit/refund_list_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:provider/provider.dart';
 
@@ -24,24 +26,21 @@ class _UserTripState extends State<UserTrip> {
   final GlobalKey<TripListState> _tripListKey = GlobalKey<TripListState>();
   final GlobalKey<ReservationListState> _reservationListKey =
       GlobalKey<ReservationListState>();
+  final GlobalKey<RefundListStateWidget> _refundList =
+      GlobalKey<RefundListStateWidget>();
 
   final List<String> list = <String>[
     'Trips',
     'Reservation',
     'Refund',
-    'Review'
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildAppBar(),
-      body: _getBodyForSelectedOption(
-        dropDownSelectOption,
-        selectedDateRange,
-        _tripListKey,
-        _reservationListKey,
-      ),
+      body: _getBodyForSelectedOption(dropDownSelectOption, selectedDateRange,
+          _tripListKey, _reservationListKey, _refundList),
     );
   }
 
@@ -60,6 +59,20 @@ class _UserTripState extends State<UserTrip> {
         end: DateTime(now.year + 1, 1, 1), // End date
       );
       context.read<TripCubit>().updateDateRange(
+            DateTimeRange(
+              start:
+                  context.read<UserCubit>().loginUser!.createdAt, // Start date
+              end: DateTime(now.year + 1, 1, 1), // End date
+            ),
+          );
+      context.read<ReservationCubit>().updateDateRange(
+            DateTimeRange(
+              start:
+                  context.read<UserCubit>().loginUser!.createdAt, // Start date
+              end: DateTime(now.year + 1, 1, 1), // End date
+            ),
+          );
+      context.read<RefundListCubit>().updateDateRange(
             DateTimeRange(
               start:
                   context.read<UserCubit>().loginUser!.createdAt, // Start date
@@ -218,6 +231,12 @@ class _UserTripState extends State<UserTrip> {
               .read<ReservationCubit>()
               .updateDateRange(picked);
         }
+
+        if (dropDownSelectOption == "Refund") {
+          _refundList.currentContext!
+              .read<RefundListCubit>()
+              .updateDateRange(picked);
+        }
       }
     }
   }
@@ -263,14 +282,6 @@ class _UserTripState extends State<UserTrip> {
                     },
                     child: const Text("Refund"),
                   ),
-                  PopupMenuItem(
-                    onTap: () {
-                      setState(() {
-                        dropDownSelectOption = "Review";
-                      });
-                    },
-                    child: const Text("Review"),
-                  )
                 ];
               },
             ),
@@ -312,17 +323,15 @@ class _UserTripState extends State<UserTrip> {
   }
 }
 
-Widget _getBodyForSelectedOption(
-    String option, selectedDateRange, tripListKey, reservationListKey) {
+Widget _getBodyForSelectedOption(String option, selectedDateRange, tripListKey,
+    reservationListKey, refundListKey) {
   switch (option) {
     case 'Trips':
       return TripList(key: tripListKey, selectedDateRange);
     case 'Reservation':
       return ReservationList(key: reservationListKey, selectedDateRange);
     case 'Refund':
-      return const Center(child: Text('Refund Content Here'));
-    case 'Review':
-      return const Center(child: Text('Review Content Here'));
+      return RefundList(key: refundListKey, selectedDateRange);
     default:
       return const Center(child: Text('Select an option'));
   }

@@ -78,7 +78,6 @@ class AuthorizeProfile extends StatelessWidget {
                           context.read<ReservationCubit>().logout();
                           context.read<TripCubit>().logout();
                           context.read<ListingListCubit>().logout();
-
                           context.read<UserCubit>().logout(body);
                         },
                         style: TextButton.styleFrom(

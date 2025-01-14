@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
+import 'package:project4_flutter/shared/bloc/refund_list_cubit/refund_list_cubit.dart';
+import 'package:project4_flutter/shared/bloc/refund_list_cubit/refund_list_state.dart';
 
-import 'package:project4_flutter/features/trips/models/trip_count.dart';
-import 'package:project4_flutter/features/trips/widgets/booking_detail.dart';
-import 'package:project4_flutter/shared/widgets/loading_icon.dart';
-
-import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
-import '../../../shared/bloc/trip_cubit/trip_state.dart';
+import '../../../shared/widgets/loading_icon.dart';
+import '../models/booking_minimize_dto.dart';
+import 'booking_detail.dart';
 
 const months = [
   "January",
@@ -26,85 +24,70 @@ const months = [
   "December",
 ];
 
-class TripList extends StatefulWidget {
-  const TripList(this.selectedDateRange, {super.key});
+class RefundList extends StatefulWidget {
+  const RefundList(this.selectedDateRange, {super.key});
 
   final DateTimeRange selectedDateRange;
 
   @override
-  State<TripList> createState() => TripListState();
+  State<RefundList> createState() => RefundListStateWidget();
 }
 
-class TripListState extends State<TripList> {
+class RefundListStateWidget extends State<RefundList> {
   List<BookingMinimizeDto> _bookingList = [];
   final _myController = ScrollController();
 
-  TripCubit getTripCubit() {
-    return context.read<TripCubit>();
+  RefundListCubit getRefundListCubit() {
+    return context.read<RefundListCubit>();
   }
 
   void _myScrollListener() {
     if (_myController.offset >= _myController.position.maxScrollExtent &&
         !_myController.position.outOfRange &&
-        getTripCubit().isLoading == false) {
-      getTripCubit().getBookingList();
+        !getRefundListCubit().isLoading) {
+      getRefundListCubit().getRefundList();
     }
   }
 
   List<Map<String, String>> listStatus = [
-    {'label': 'Checking out', 'value': 'checkout'},
-    {'label': 'Currently Stay-in', 'value': 'stayin'},
-    {'label': 'Upcoming', 'value': 'upcoming'},
-    {'label': 'Pending review', 'value': 'pending'},
-    {'label': 'Stay-in history', 'value': 'history'}
+    {'label': 'Pending', 'value': 'pending'},
+    {'label': 'Denied', 'value': 'denied'},
+    {'label': 'Cancel', 'value': 'cancel'},
   ];
 
   @override
   void initState() {
     super.initState();
     _myController.addListener(_myScrollListener);
-    if (getTripCubit().state is TripNotAvailable) {
-      getTripCubit().getBookingCount();
-      getTripCubit().getBookingList();
+
+    if (getRefundListCubit().state is RefundListNotAvailable) {
+      getRefundListCubit().getRefundList();
     }
   }
 
   String returnNothing(status) {
-    if (status == "checkout") {
-      return "You don’t have any stay-in currently checkout.";
-    }
-    if (status == "stayin") {
-      return "You don’t have stay-in today.";
-    }
-    if (status == "upcoming") {
-      return "You don’t have upcoming stay-in";
-    }
     if (status == "pending") {
-      return "You don’t have any stay-in pending review.";
+      return "You don’t have any reservation stay-in currently pending.";
     }
-    if (status == "history") {
-      return "You currently don’t have any stay-in history.";
+    if (status == "denied") {
+      return "You don’t have any denied stay-in.";
+    }
+    if (status == "cancel") {
+      return "You don’t have any cancel stay-in";
     }
 
     return "";
-  }
-
-  Future refresh() async {
-    await getTripCubit().updateStatus(getTripCubit().currentStatus!);
-    await getTripCubit().getBookingCount();
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        return refresh();
+        return getRefundListCubit().getRefundList();
       },
-      child: BlocBuilder<TripCubit, TripState>(
+      child: BlocBuilder<RefundListCubit, RefundListState>(
         builder: (context, tripState) {
-          _bookingList = context.read<TripCubit>().bookingList;
-
-          var tripCount = context.read<TripCubit>().tripCount;
+          _bookingList = context.read<RefundListCubit>().refundList;
 
           List<List<int>> groupDate =
               _bookingList.fold<List<List<int>>>([], (previousValue, booking) {
@@ -124,24 +107,26 @@ class TripListState extends State<TripList> {
             return previousValue;
           });
 
-          bool isLoading = tripState is TripLoading;
-          return buildBodyScaffold(groupDate, isLoading, tripCount);
+          bool isLoading = tripState is RefundListLoading;
+          return buildBodyScaffold(groupDate, isLoading);
         },
       ),
     );
   }
 
   Scaffold buildBodyScaffold(
-      List<List<int>> groupDate, bool isLoading, TripCount? tripCount) {
+    List<List<int>> groupDate,
+    bool isLoading,
+  ) {
     return Scaffold(
       body: Stack(
         children: [
-          // Main content of the body
           (_bookingList.isNotEmpty)
               ? Column(
                   children: [
                     Expanded(
                       child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         controller: _myController,
                         itemCount: groupDate.length,
                         itemBuilder: (context, index) {
@@ -198,9 +183,10 @@ class TripListState extends State<TripList> {
                                           },
                                         ));
                                       },
-                                      splashColor: Colors.blue.withOpacity(0.3),
+                                      splashColor: Colors.blue.withOpacity(
+                                          0.3), // Ripple effect color
                                       highlightColor:
-                                          Colors.blue.withOpacity(0.1),
+                                          Colors.blue.withOpacity(0.1), // Hold
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Row(
@@ -229,7 +215,9 @@ class TripListState extends State<TripList> {
                                                     .propertyImages[0]),
                                                 size: 100,
                                               ),
-                                              const SizedBox(width: 20),
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
                                               ConstrainedBox(
                                                 constraints:
                                                     const BoxConstraints(
@@ -258,7 +246,7 @@ class TripListState extends State<TripList> {
                                                     ),
                                                     Text(
                                                         softWrap: true,
-                                                        "${e.checkInDay.day} ${months[e.checkInDay.month - 1].substring(0, 3)} ${e.checkInDay.year} - ${e.checkOutDay.day} ${months[e.checkOutDay.month - 1].substring(0, 3)} ${e.checkOutDay.year}")
+                                                        "${e.checkInDay.day} ${months[e.checkInDay.month - 1].substring(0, 3)} ${e.checkOutDay.year} - ${e.checkOutDay.day} ${months[e.checkOutDay.month - 1].substring(0, 3)} ${e.checkOutDay.year}")
                                                   ],
                                                 ),
                                               )
@@ -273,64 +261,63 @@ class TripListState extends State<TripList> {
                         },
                       ),
                     ),
+                    if (isLoading) const LoadingIcon(size: 40),
                   ],
                 )
               : !isLoading
-                  ? Center(
-                      child: Container(
-                        height: 200,
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        padding: const EdgeInsets.all(20),
-                        decoration: const BoxDecoration(
-                            color: Color.fromARGB(10, 0, 0, 0)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const HugeIcon(
-                              icon: HugeIcons.strokeRoundedAlertCircle,
-                              color: Colors.black,
-                              size: 34.0,
-                            ),
-                            Text(
-                              returnNothing(getTripCubit().currentStatus),
-                              textAlign: TextAlign.center,
-                              softWrap: true,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStateProperty.all(Colors.black),
-                                elevation: WidgetStateProperty.all(
-                                    5), // Adjust elevation to create shadow
-                                shadowColor: WidgetStateProperty.all(
-                                    Colors.black.withValues(
-                                        alpha:
-                                            0.5)), // Shadow color and opacity
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Center(
+                        child: Container(
+                          height: 200,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          padding: const EdgeInsets.all(20),
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(10, 0, 0, 0)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const HugeIcon(
+                                icon: HugeIcons.strokeRoundedAlertCircle,
+                                color: Colors.black,
+                                size: 34.0,
                               ),
-                              onPressed: () {
-                                refresh();
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 24.0, vertical: 12.0),
-                                child: Text(
-                                  'Refresh',
-                                  style: TextStyle(color: Colors.white),
+                              const Text(
+                                "You don't have any refund",
+                                textAlign: TextAlign.center,
+                                softWrap: true,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all(Colors.black),
+                                  elevation: WidgetStateProperty.all(
+                                      5), // Adjust elevation to create shadow
+                                  shadowColor: WidgetStateProperty.all(
+                                      Colors.black.withValues(
+                                          alpha:
+                                              0.5)), // Shadow color and opacity
                                 ),
-                              ),
-                            )
-                          ],
+                                onPressed: () {
+                                  getRefundListCubit().getRefundList();
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 24.0, vertical: 12.0),
+                                  child: Text(
+                                    'Refresh',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     )
-                  : const LoadingIcon(size: 50), // Empty space when not loading
-          // Loading Icon at the bottom
-          if (isLoading && getTripCubit().currentPage != 0)
+                  : const LoadingIcon(size: 50),
+          if (isLoading && getRefundListCubit().currentPage != 0)
             const Positioned(
               bottom: 20,
               left: 0,
@@ -338,71 +325,6 @@ class TripListState extends State<TripList> {
               child: LoadingIcon(size: 40),
             ),
         ],
-      ),
-      bottomNavigationBar: buildBottomContainer(tripCount),
-    );
-  }
-
-  Container buildBottomContainer(TripCount? tripCount) {
-    return Container(
-      decoration: const BoxDecoration(
-          border: Border(
-              top: BorderSide(color: Color.fromARGB(25, 0, 0, 0), width: 1))),
-      padding: const EdgeInsets.all(10),
-      child: SizedBox(
-        height: 50,
-        child: ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemCount: listStatus.length,
-          itemBuilder: (context, index) {
-            int count(status) {
-              if (tripCount != null) {
-                if (status == "checkout") {
-                  return tripCount.checkoutCount;
-                }
-                if (status == "stayin") {
-                  return tripCount.stayInCount;
-                }
-                if (status == "upcoming") {
-                  return tripCount.upcomingCount;
-                }
-                if (status == "pending") {
-                  return tripCount.pendingCount;
-                }
-                if (status == "history") {
-                  return tripCount.historyCount;
-                }
-              }
-              return 0;
-            }
-
-            return Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                    backgroundColor: getTripCubit().currentStatus ==
-                            listStatus[index]['value']
-                        ? Colors.black
-                        : null),
-                onPressed: () {
-                  getTripCubit().updateStatus(listStatus[index]['value']!);
-                },
-                child: Text(
-                  tripCount == null
-                      ? listStatus[index]['label']!
-                      : "${listStatus[index]['label']!} (${count(listStatus[index]['value'])})",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: getTripCubit().currentStatus ==
-                              listStatus[index]['value']
-                          ? Colors.white
-                          : Colors.black),
-                ),
-              ),
-            );
-          },
-        ),
       ),
     );
   }

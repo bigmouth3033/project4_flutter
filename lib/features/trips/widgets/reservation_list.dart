@@ -130,7 +130,7 @@ class ReservationListState extends State<ReservationList> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
+                        physics: const AlwaysScrollableScrollPhysics(),
                         controller: _myController,
                         itemCount: groupDate.length,
                         itemBuilder: (context, index) {
@@ -292,6 +292,33 @@ class ReservationListState extends State<ReservationList> {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStateProperty.all(Colors.black),
+                                elevation: WidgetStateProperty.all(
+                                    5), // Adjust elevation to create shadow
+                                shadowColor: WidgetStateProperty.all(
+                                    Colors.black.withValues(
+                                        alpha:
+                                            0.5)), // Shadow color and opacity
+                              ),
+                              onPressed: () {
+                                getReservationCubit().updateStatus(
+                                    getReservationCubit().currentStatus);
+                              },
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 12.0),
+                                child: Text(
+                                  'Refresh',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),

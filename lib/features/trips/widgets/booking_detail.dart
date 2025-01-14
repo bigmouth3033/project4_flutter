@@ -89,6 +89,7 @@ class BookingDetail extends StatelessWidget {
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
@@ -474,8 +475,9 @@ class BookingDetail extends StatelessWidget {
                             ),
                             ConstrainedBox(
                               constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.8),
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.8,
+                              ),
                               child: Text(
                                 booking.refundPolicy.policyName == "Flexible"
                                     ? returnFlexibleRefund(booking.checkInDay)
@@ -495,12 +497,24 @@ class BookingDetail extends StatelessWidget {
                                         "Moderate" &&
                                     checkIfModerateRefundable(
                                         "Moderate", booking.checkInDay)))
-                              OutlinedButton(
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      WidgetStateProperty.all(Colors.black),
+                                  elevation: WidgetStateProperty.all(
+                                      5), // Adjust elevation to create shadow
+                                  shadowColor: WidgetStateProperty.all(
+                                      Colors.black.withValues(
+                                          alpha:
+                                              0.5)), // Shadow color and opacity
+                                ),
                                 onPressed: () {},
-                                child: const Text(
-                                  "Refund",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 24.0, vertical: 12.0),
+                                  child: Text(
+                                    'Refund',
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ),
                               )

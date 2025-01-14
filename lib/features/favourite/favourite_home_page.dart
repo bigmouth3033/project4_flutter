@@ -1,45 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project4_flutter/features/trips/widgets/user_trip.dart';
-import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
-import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
-import 'package:project4_flutter/shared/widgets/loading_icon.dart';
+import 'package:project4_flutter/features/favourite/favourite.dart';
+import 'package:project4_flutter/shared/widgets/bold_text.dart';
 
-import '../../shared/widgets/bold_text.dart';
+import '../../home_screen.dart';
+import '../../shared/bloc/user_cubit/user_cubit.dart';
+import '../../shared/bloc/user_cubit/user_state.dart';
+import '../../shared/widgets/loading_icon.dart';
 import '../authentication/authentication.dart';
 
-class Trip extends StatefulWidget {
-  const Trip({super.key});
-
-  @override
-  State<Trip> createState() => _TripState();
-}
-
-class _TripState extends State<Trip> {
-  String dropDownSelectOption = 'Trips';
-
-  final List<String> list = <String>[
-    'Trips',
-    'Reservation',
-    'Refund',
-    'Review'
-  ];
+class FavouriteHomePage extends StatelessWidget {
+  const FavouriteHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserCubit, UserState>(
+    return BlocConsumer<UserCubit, UserState>(
       builder: (context, state) {
-        if (state is UserSuccess) {
-          return const UserTrip();
-        }
-
         if (state is UserNotLogin) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const BoldText(
-                  text: "Please login to see your own trips",
+                  text: "Please login to see your own favourite",
                   fontSize: 18,
                 ),
                 const SizedBox(
@@ -78,7 +61,23 @@ class _TripState extends State<Trip> {
           return const LoadingIcon(size: 60);
         }
 
-        return const Text("Loading...");
+        if (state is UserSuccess) {
+          return const Favourite();
+        }
+
+        return const Text("Loading....");
+      },
+      listener: (context, state) {
+        if (state is UserError) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false, // Removes all previous routes
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
       },
     );
   }

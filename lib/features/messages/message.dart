@@ -11,6 +11,8 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 import '../../shared/bloc/user_cubit/user_cubit.dart';
 import '../../shared/bloc/user_cubit/user_state.dart';
+import '../../shared/widgets/bold_text.dart';
+import '../authentication/authentication.dart';
 import 'bloc/message_cubit/add_friend_cubit.dart';
 import 'bloc/message_cubit/search_friend_cubit.dart';
 
@@ -42,8 +44,44 @@ class _MessageState extends State<Message> {
         }
 
         if (state is UserNotLogin) {
-          return const Center(
-              child: Text("Please login to access chat feature"));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const BoldText(
+                  text: "Please login to see your own messages",
+                  fontSize: 18,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.black),
+                    elevation: WidgetStateProperty.all(
+                        5), // Adjust elevation to create shadow
+                    shadowColor: WidgetStateProperty.all(Colors.black
+                        .withValues(alpha: 0.5)), // Shadow color and opacity
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (context) {
+                        return Authentication();
+                      },
+                    ));
+                  },
+                  child: const Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    child: Text(
+                      'Login',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
         }
         return const Text("Loading...");
       },

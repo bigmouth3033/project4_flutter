@@ -21,6 +21,7 @@ import 'package:project4_flutter/shared/bloc/category_cubit/category_cubit.dart'
 import 'package:project4_flutter/shared/bloc/policy_cubit/policy_cubit.dart';
 import 'package:project4_flutter/shared/bloc/property_cubit/property_cubit.dart';
 import 'package:project4_flutter/shared/bloc/read_review_cubit/review_cubit.dart';
+import 'package:project4_flutter/shared/bloc/refund_list_cubit/refund_list_cubit.dart';
 import 'package:project4_flutter/shared/bloc/reservation_cubit/reservation_cubit.dart';
 import 'package:project4_flutter/shared/bloc/travel_cubit/travel_cubit.dart';
 import 'package:project4_flutter/shared/bloc/trip_cubit/trip_cubit.dart';
@@ -74,6 +75,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => ListingListCubit(), // Provide the Cubit
+        ),
+        BlocProvider(
+          create: (_) => RefundListCubit(), // Provide the Cubit
         ),
         BlocProvider(
           create: (_) => TripCubit(), // Provide the Cubit

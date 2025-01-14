@@ -39,6 +39,7 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
                   MainAxisSize.min, // Ensures the Column doesn't overflow
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     //SearchBar here
                     Padding(
@@ -106,19 +107,22 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
                     ),
 
                     //FilterButton here
-                    OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: const LinearBorder(),
-                          padding: const EdgeInsets.all(0),
-                        ),
-                        onPressed: () {
-                          _showFilterPopup(context);
-                        },
-                        child: const HugeIcon(
-                          icon: HugeIcons.strokeRoundedPreferenceHorizontal,
-                          color: Colors.black,
-                          size: 25.0,
-                        ))
+                    SizedBox(
+                      width: 40,
+                      child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            shape: const LinearBorder(),
+                            padding: const EdgeInsets.all(0),
+                          ),
+                          onPressed: () {
+                            _showFilterPopup(context);
+                          },
+                          child: const HugeIcon(
+                            icon: HugeIcons.strokeRoundedPreferenceHorizontal,
+                            color: Colors.black,
+                            size: 25.0,
+                          )),
+                    )
                   ],
                 ),
                 const Expanded(
