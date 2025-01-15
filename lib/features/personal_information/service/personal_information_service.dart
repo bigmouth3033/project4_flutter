@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:project4_flutter/features/personal_information/models/phone_number_request.dart';
 import 'package:project4_flutter/features/personal_information/models/preferred_name_request.dart';
 import 'package:project4_flutter/features/user_profile/models/avatar_option_request.dart';
+import 'package:project4_flutter/features/user_profile/models/user_refill_response.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
 
 class PersonalInformationService {
@@ -101,7 +102,6 @@ class PersonalInformationService {
   }
 
   Future putAvatarImage(AvatarOptionRequest request) async {
-
     var token = await tokenStorage.getToken();
     var uri = Uri.http(baseUrl, "/userCM/updateAvatar");
 
@@ -117,9 +117,20 @@ class PersonalInformationService {
     );
     try {
       final response = await multipartRequest.send();
-
     } catch (e) {
       throw Exception('Failed to update Avatar');
     }
+  }
+
+  Future<UserRefillResponse>? getUserRefill() async {
+    var token = await tokenStorage.getToken();
+    var uri = Uri.http(baseUrl, "/userCM/userRefill");
+
+    final response = await http.get(uri, headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      "Authorization": "Bearer $token",
+    });
+
+    return UserRefillResponse.fromJson(json.decode(response.body));
   }
 }

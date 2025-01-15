@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,7 +100,7 @@ class _UserAvatarState extends State<UserAvatar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Text("Add")],
               )),
-          Text("${user.firstName} ${user.lastName}",style: TextStyle(
+          Text("${utf8.decode(user.firstName.codeUnits)} ${utf8.decode(user.lastName.codeUnits)}",style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
             fontFamily: 'Roboto',
