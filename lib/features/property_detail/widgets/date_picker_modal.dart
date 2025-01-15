@@ -148,10 +148,17 @@ class _DatePickerModalState extends State<DatePickerModal> {
                           IconButton(
                             icon: const Icon(Icons.arrow_back, size: 25),
                             onPressed: () {
-                              context
-                                  .read<DateBookingCubit>()
-                                  .updateDates(tempStart, tempEnd);
-                              Navigator.pop(context);
+                              if(_startDate == null || _endDate == null)
+                             { context
+                                 .read<DateBookingCubit>()
+                                 .updateDates(tempStart, tempEnd);
+                             Navigator.pop(context);}
+                              else{
+                                context
+                                    .read<DateBookingCubit>()
+                                    .updateDates(_startDate, _endDate);
+                                Navigator.pop(context);
+                              }
                             },
                           ),
                         ],

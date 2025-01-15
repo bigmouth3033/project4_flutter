@@ -338,7 +338,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFFF0000),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 55, vertical: 18),
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
                   // Padding
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -948,16 +948,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 MaterialPageRoute(
                     builder: (context) => DatePickerModal(
                         startArv: startArv, propertyId: widget.propertyId)));
-            // showModalBottomSheet(
-            //   context: context,
-            //   isScrollControlled: true,
-            //   builder: (BuildContext context) {
-            //     return DatePickerModal(
-            //       startArv: startArv,
-            //       propertyId: widget.propertyId,
-            //     );
-            //   },
-            // );
+
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Màu nền

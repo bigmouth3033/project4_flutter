@@ -18,4 +18,4 @@ class DateBookingCubit extends Cubit<DateBookingState> {
     endDate = _endDate;
     emit(DateBookingAvailable(startDate: startDate, endDate: endDate));
   }
-}
+ }
