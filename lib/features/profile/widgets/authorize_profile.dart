@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/government/government.dart';
 import 'package:project4_flutter/features/login_and_security/login_and_security.dart';
 import 'package:project4_flutter/features/personal_information/personal_information.dart';
 import 'package:project4_flutter/features/user_profile/user_profile.dart';
@@ -218,7 +219,9 @@ class AuthorizeProfile extends StatelessWidget {
                               .zero, // No rounded corners, sharp rectangle edges
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const Government(),));
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(
@@ -267,7 +270,9 @@ class AuthorizeProfile extends StatelessWidget {
                               .zero, // No rounded corners, sharp rectangle edges
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const Government(),));
+                      },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Container(

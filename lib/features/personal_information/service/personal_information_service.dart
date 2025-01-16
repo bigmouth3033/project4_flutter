@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:project4_flutter/features/government/models/government_request.dart';
 import 'package:project4_flutter/features/login_and_security/models/change_password_request.dart';
 import 'package:project4_flutter/features/login_and_security/models/otp_confirm_request.dart';
 import 'package:project4_flutter/features/personal_information/models/legal_name_request.dart';
@@ -120,6 +121,34 @@ class PersonalInformationService {
     } catch (e) {
       throw Exception('Failed to update Avatar');
     }
+  }
+
+  Future putGovernment(GovernmentRequest request) async{
+    var token = await tokenStorage.getToken();
+    var uri = Uri.http(baseUrl, "/userCM/government");
+
+    final multipartRequest = http.MultipartRequest('PUT', uri);
+    multipartRequest.headers['Authorization'] = "Bearer $token";
+    multipartRequest.fields['IdType'] = request.idType.toString();
+    multipartRequest.fields['governmentCountry'] = request.governmentCountry;
+    multipartRequest.files.add(
+      await http.MultipartFile.fromPath(
+        'frontImage', // Tên tham số trong API
+        request.frontImageUri, // Đường dẫn của tệp
+      ),
+    );
+    multipartRequest.files.add(
+      await http.MultipartFile.fromPath(
+        'backImage', // Tên tham số trong API
+        request.backImageUri, // Đường dẫn của tệp
+      ),
+    );
+    try {
+      final response = await multipartRequest.send();
+    } catch (e) {
+      throw Exception('Failed to update Government Information');
+    }
+
   }
 
   Future<UserRefillResponse>? getUserRefill() async {
