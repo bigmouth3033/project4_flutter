@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "192.168.1.252:8080";
+  final String baseUrl = "192.168.1.24:8080";
 
   ApiService();
 
@@ -16,9 +16,11 @@ class ApiService {
     final response = await http.get(uri, headers: headers);
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final responseBody = utf8.decode(response.bodyBytes);
+      final jsonResponse = jsonDecode(responseBody);
+      return jsonResponse;
     } else {
-      throw Exception("Failed to load data");
+      throw Exception("Failed to load data file api neeee");
     }
   }
 

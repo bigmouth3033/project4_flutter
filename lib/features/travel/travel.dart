@@ -7,6 +7,8 @@ import 'package:project4_flutter/features/travel/widgets/travel_header.dart';
 import 'package:project4_flutter/shared/bloc/amenity_cubit/amenity_cubit.dart';
 import 'package:project4_flutter/shared/bloc/amenity_cubit/amenity_state.dart';
 import 'package:project4_flutter/shared/bloc/category_cubit/category_cubit.dart';
+import 'package:project4_flutter/shared/bloc/city_cubit/city_cubit.dart';
+import 'package:project4_flutter/shared/bloc/city_cubit/city_state.dart';
 import 'package:project4_flutter/shared/bloc/filter_cubit/filter_cubit.dart';
 import 'package:project4_flutter/shared/bloc/filter_cubit/filter_state.dart';
 import 'package:project4_flutter/shared/bloc/travel_cubit/travel_cubit.dart';
@@ -26,6 +28,7 @@ class _TravelState extends State<Travel> {
   late CategoryCubit getCategoryCubit;
   late AmenityCubit getAmenityCubit;
   late FilterCubit getFilterCubit;
+  late CityCubit getCityCubit;
   late List<TravelEntity>? _travels;
 
   void _myScrollListener() {
@@ -46,6 +49,7 @@ class _TravelState extends State<Travel> {
     getCategoryCubit = context.read<CategoryCubit>();
     getAmenityCubit = context.read<AmenityCubit>();
     getFilterCubit = context.read<FilterCubit>();
+    getCityCubit = context.read<CityCubit>();
 
     //get new at begin
     if (getTravelCubit.state is TravelNotAvailable) {
@@ -78,8 +82,31 @@ class _TravelState extends State<Travel> {
                 }
               },
             ),
+            BlocListener<CityCubit, CityState>(
+              listener: (context, state) {
+                if (state is CityChangeSuccess) {
+                  getTravelCubit.changeCity(getCityCubit.city);
+                }
+                if (state is DistrictChangeSuccess) {
+                  getTravelCubit.changeDistrict(getCityCubit.district);
+                }
+                if (state is WardChangeSuccess) {
+                  getTravelCubit.changeWard(getCityCubit.ward);
+                }
+              },
+            ),
             BlocListener<FilterCubit, FilterState>(
               listener: (context, state) {
+                if (state is SearchNameChangeSuccess) {
+                  getTravelCubit.changeSearchName(getFilterCubit.searchName);
+                }
+                if (state is DateChangeSuccess) {
+                  getTravelCubit.changeDates(
+                      getFilterCubit.startDate, getFilterCubit.endDate);
+                }
+                if (state is GuestChangeSuccess) {
+                  getTravelCubit.changeGuest(getFilterCubit.guest);
+                }
                 if (state is PropertyTypeChangeSuccess) {
                   getTravelCubit
                       .changePropertyType(getFilterCubit.propertyType);
