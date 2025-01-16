@@ -15,10 +15,56 @@ class FilterCubit extends Cubit<FilterState> {
   String? isInstant;
   bool? isSelfCheckIn;
   bool? isPetAllow;
+  DateTime? startDate;
+  DateTime? endDate;
+  int children = 0;
+  int adult = 1;
+  int guest = 1;
+  String? searchName;
 
   FilterCubit() : super(InitialState());
 
-//PropertyType
+  void changeSearchName(String? n) {
+    searchName = n;
+    emit(SearchNameChangeSuccess());
+  }
+
+  //Search Guest
+  void changeAdult(int a) {
+    adult = a;
+    guest = a + children;
+    emit(GuestChangeSuccess(guest));
+  }
+
+  void changeChildren(int c) {
+    children = c;
+    guest = adult + c;
+    emit(GuestChangeSuccess(guest));
+  }
+
+  //Search Dates
+  void updateDates(DateTime? _startDate, DateTime? _endDate) {
+    //dùng để update giao diện cho nút start
+    if (_startDate != null) {
+      startDate = _startDate;
+      endDate = null;
+      emit(StartChangeSuccess());
+    }
+    //có khoảng thi moi gọi request mới
+    if (_startDate != null && _endDate != null) {
+      startDate = _startDate;
+      endDate = _endDate;
+      emit(DateChangeSuccess());
+    }
+    //clealAll
+    if (_startDate == null && _endDate == null) {
+      startDate = _startDate;
+      endDate = _endDate;
+      emit(DateChangeSuccess());
+    }
+  }
+
+  //PropertyType
   void changePropertyType(String? proType) {
     if (propertyType == proType) {
       propertyType = null;

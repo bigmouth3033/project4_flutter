@@ -2,6 +2,10 @@ abstract class FilterState {}
 
 class InitialState extends FilterState {}
 
+class SearchNameChangeSuccess extends FilterState {
+  SearchNameChangeSuccess();
+}
+
 class PropertyTypeChangeSuccess extends FilterState {
   String? propertyType;
   PropertyTypeChangeSuccess(this.propertyType);
@@ -52,12 +56,10 @@ class AddressCodeChangeSuccess extends FilterState {
   AddressCodeChangeSuccess(this.addressCode);
 }
 
-class StartDateChangeSuccess extends FilterState {
-  final String startDate;
-  StartDateChangeSuccess(this.startDate);
+class DateChangeSuccess extends FilterState {
+  DateChangeSuccess();
 }
 
-class EndDateChangeSuccess extends FilterState {
-  final String endDate;
-  EndDateChangeSuccess(this.endDate);
+class StartChangeSuccess extends FilterState {
+  StartChangeSuccess();
 }

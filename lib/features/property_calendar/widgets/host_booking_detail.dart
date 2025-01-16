@@ -14,6 +14,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../messages/bloc/message_cubit/add_friend_cubit.dart';
 import '../../messages/bloc/message_cubit/search_friend_cubit.dart';
 import '../../messages/widgets/messages_body.dart';
+import '../../property_detail/property_detail.dart';
 
 class HostBookingDetail extends StatelessWidget {
   const HostBookingDetail({required this.booking, super.key});
@@ -193,7 +194,15 @@ class HostBookingDetail extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PropertyDetail(booking.property.id),
+                      ),
+                    );
+                  },
                   splashColor:
                       Colors.blue.withOpacity(0.3), // Ripple effect color
                   highlightColor: Colors.blue.withOpacity(0.1), // Ho

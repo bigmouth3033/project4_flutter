@@ -8,6 +8,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/messages/widgets/messages_body.dart';
+import 'package:project4_flutter/features/property_detail/property_detail.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -198,7 +199,15 @@ class BookingDetail extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PropertyDetail(booking.property.id),
+                      ),
+                    );
+                  },
                   splashColor:
                       Colors.blue.withOpacity(0.3), // Ripple effect color
                   highlightColor: Colors.blue.withOpacity(0.1), // Ho
@@ -664,7 +673,15 @@ class BookingDetail extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                 child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            PropertyDetail(booking.property.id),
+                      ),
+                    );
+                  },
                   splashColor:
                       Colors.blue.withOpacity(0.3), // Ripple effect color
                   highlightColor: Colors.blue.withOpacity(0.1), // Ho

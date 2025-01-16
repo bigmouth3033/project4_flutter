@@ -7,10 +7,10 @@ class ReviewCubit extends Cubit<ReviewState> {
 
   var propertyApi = PropertyDetailApi();
 
-  Future<void> getReviewOfProperty() async {
+  Future<void> getReviewOfProperty(id) async {
     emit(ReviewLoading("Loading..."));
     try {
-      var customPaging = await propertyApi.getCountReviewOfProperty(629, 0);
+      var customPaging = await propertyApi.getCountReviewOfProperty(id, 0);
       if (customPaging != null) {
         emit(ReviewSuccess(customPaging));
       } else {

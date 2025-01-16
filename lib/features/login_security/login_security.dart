@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/qr_scanner/qr_scanner.dart';
 
+import '../login_and_security/login_and_security.dart';
+
 class LoginSecurity extends StatelessWidget {
   const LoginSecurity({super.key});
 
@@ -145,7 +147,13 @@ class LoginSecurity extends StatelessWidget {
                     ],
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginAndSecurity(),
+                          ));
+                    },
                     child: const Text("Update"),
                   ),
                 ],

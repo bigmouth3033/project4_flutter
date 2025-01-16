@@ -82,6 +82,8 @@ dependencies:
   flutter_map_cancellable_tile_provider: ^3.0.2
   flutter_map_location_marker: ^9.1.1
   equatable: ^2.0.7
+  flutter_otp_text_field: ^1.1.0+2
+  image_picker: ^0.8.4+4
 
 
 
@@ -97,6 +99,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

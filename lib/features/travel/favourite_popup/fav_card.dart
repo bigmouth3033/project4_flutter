@@ -59,7 +59,7 @@ class _FavCardState extends State<FavCard> {
                       // BoxShadow(color: Colors.red, offset: Offset(-5, -5))
                     ]),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(3)),
+                  borderRadius: const BorderRadius.all(Radius.circular(3)),
                   child: CachedNetworkImage(
                     imageUrl: widget.favourite.propertyImage,
                     width: MediaQuery.of(context)

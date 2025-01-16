@@ -52,9 +52,9 @@ class TripListState extends State<TripList> {
   }
 
   List<Map<String, String>> listStatus = [
+    {'label': 'Upcoming', 'value': 'upcoming'},
     {'label': 'Checking out', 'value': 'checkout'},
     {'label': 'Currently Stay-in', 'value': 'stayin'},
-    {'label': 'Upcoming', 'value': 'upcoming'},
     {'label': 'Pending review', 'value': 'pending'},
     {'label': 'Stay-in history', 'value': 'history'}
   ];
@@ -142,6 +142,7 @@ class TripListState extends State<TripList> {
                   children: [
                     Expanded(
                       child: ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
                         controller: _myController,
                         itemCount: groupDate.length,
                         itemBuilder: (context, index) {

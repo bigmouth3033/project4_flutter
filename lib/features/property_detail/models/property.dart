@@ -54,6 +54,7 @@ class Property {
   final int accuracyScore;
   final int checkinScore;
   final int communicationScore;
+  final int userBadgeId;
 
   Property(
       {required this.id,
@@ -100,6 +101,7 @@ class Property {
       required this.checkinScore,
       required this.accuracyScore,
       required this.cleanlinessScore,
+      required this.userBadgeId,
       required this.communicationScore});
 
   factory Property.fromJson(Map<String, dynamic> json) =>

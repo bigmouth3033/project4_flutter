@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:project4_flutter/shared/api/api_service.dart';
-import 'package:project4_flutter/shared/bloc/category_cubit/category_cubit.dart';
 import 'package:project4_flutter/shared/bloc/travel_cubit/travel_state.dart';
 import 'package:project4_flutter/shared/models/custom_paging.dart';
 import 'package:project4_flutter/shared/models/travel_entity.dart';
@@ -14,8 +13,10 @@ class TravelCubit extends Cubit<TravelState> {
 
   var tokenStorage = TokenStorage();
 
-  String? currentStartDate;
-  String? currentEndDate;
+  DateTime? currentStartDate;
+  DateTime? currentEndDate;
+  var startDateFormat;
+  var endDateFormat;
   int currentPage = 0;
   bool hasMore = true;
   bool isLoading = false;
@@ -31,6 +32,11 @@ class TravelCubit extends Cubit<TravelState> {
   int bed = 1;
   int bathRoom = 1;
   int totalCount = 0;
+  int guest = 1;
+  int? city;
+  int? district;
+  int? ward;
+  String? searchName;
 
   TravelCubit() : super(TravelNotAvailable());
 
@@ -44,6 +50,59 @@ class TravelCubit extends Cubit<TravelState> {
   //fetch data => Future
   Future changeCategory(int? category) async {
     categoryId = category;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  }
+
+  //fetch data => Future
+  Future changeSearchName(String? n) async {
+    searchName = n;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  }
+
+  //fetch data => Future//fetch data => Future
+  Future changeCity(int? ct) async {
+    city = ct;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  } //fetch data => Future
+
+  Future changeDistrict(int? dis) async {
+    district = dis;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  } //fetch data => Future
+
+  Future changeWard(int? wa) async {
+    ward = wa;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  }
+
+  //fetch data => Future
+  Future changeGuest(int g) async {
+    guest = g;
+    currentPage = 0;
+    hasMore = true;
+    travelList.clear();
+    await getPropertyList();
+  }
+
+  //fetch data => Future
+  Future changeDates(DateTime? startDate, DateTime? endDate) async {
+    currentStartDate = startDate;
+    currentEndDate = endDate;
     currentPage = 0;
     hasMore = true;
     travelList.clear();
@@ -142,18 +201,22 @@ class TravelCubit extends Cubit<TravelState> {
 
     try {
       isLoading = true;
-      // Lấy ngày hôm nay và ngày mai
-      DateTime today = DateTime.now();
-      DateTime tomorrow = today.add(const Duration(days: 1));
-
-      // Định dạng ngày theo kiểu "yyyy-MM-dd"
-      String formattedToday = DateFormat('yyyy-MM-dd').format(today);
-      String formattedTomorrow = DateFormat('yyyy-MM-dd').format(tomorrow);
+      //lần đầu mở lên hoặc clear search date
+      if (currentStartDate == null && currentEndDate == null) {
+        startDateFormat = null;
+        endDateFormat = null;
+      }
+      if (currentStartDate != null && currentEndDate != null) {
+        // Định dạng ngày theo kiểu "yyyy-MM-dd"
+        startDateFormat = DateFormat('yyyy-MM-dd').format(currentStartDate!);
+        endDateFormat = DateFormat('yyyy-MM-dd').format(currentEndDate!);
+      }
 
       Map<String, dynamic> params = {
         'pageNumber': currentPage,
         'pageSize': 10,
         'categoryId': categoryId,
+        'name': searchName,
         'propertyType': propertyType,
         'amenities': Uri.encodeComponent(jsonEncode(amenityIdList)),
         'isInstant': isInstant,
@@ -163,23 +226,22 @@ class TravelCubit extends Cubit<TravelState> {
         'room': room,
         'bed': bed,
         'bathRoom': bathRoom,
-        'guest': null,
-        'province': null,
-        'district': null,
-        'ward': null,
-        'startDate': formattedToday,
-        'endDate': formattedTomorrow,
+        'guest': guest,
+        'province': city,
+        'district': district,
+        'ward': ward,
+        'startDate': startDateFormat,
+        'endDate': endDateFormat,
       };
       var response =
           await apiService.get("listingCM/propertyCMflutter", params: params);
       var customPaging = CustomPaging.fromJson(response);
 
       if (customPaging.status == 200) {
-        var travels = (customPaging.data as List).map((item) {
+        var listData = (customPaging.data as List).map((item) {
           return TravelEntity.fromJson(item);
         }).toList();
-
-        travelList.addAll(travels);
+        travelList.addAll(listData);
         hasMore = customPaging.hasNext;
         totalCount = customPaging.totalCount;
 

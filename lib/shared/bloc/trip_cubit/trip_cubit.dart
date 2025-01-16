@@ -13,13 +13,14 @@ import '../../../features/trips/models/trip_count.dart';
 class TripCubit extends Cubit<TripState> {
   var apiService = ApiService();
   var tokenStorage = TokenStorage();
-  String? currentStatus = "checkout";
+  String? currentStatus = "upcoming";
   String? currentStartDate;
   String? currentEndDate;
   int currentPage = 0;
   bool hasMore = true;
   bool isLoading = false;
   TripCount? tripCount;
+  bool groupDate = true;
   final List<BookingMinimizeDto> bookingList = [];
   TripCubit() : super(TripNotAvailable());
 
@@ -87,6 +88,7 @@ class TripCubit extends Cubit<TripState> {
         'status': currentStatus,
         'startDate': currentStartDate,
         'endDate': currentEndDate,
+        'groupDate': groupDate
       };
 
       var token = await tokenStorage.getToken();

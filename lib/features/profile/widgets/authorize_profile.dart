@@ -3,7 +3,9 @@ import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/listing_list/listing_list.dart';
+import 'package:project4_flutter/features/login_and_security/login_and_security.dart';
 import 'package:project4_flutter/features/login_security/login_security.dart';
+import 'package:project4_flutter/features/personal_information/personal_information.dart';
 import 'package:project4_flutter/main.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
@@ -14,6 +16,7 @@ import '../../../shared/bloc/listing_list_cubit/listing_list_cubit.dart';
 import '../../../shared/bloc/message_room_cubit/message_room_cubit.dart';
 import '../../../shared/bloc/reservation_cubit/reservation_cubit.dart';
 import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
+import '../../user_profile/user_profile.dart';
 
 class AuthorizeProfile extends StatelessWidget {
   const AuthorizeProfile({super.key});
@@ -148,7 +151,14 @@ class AuthorizeProfile extends StatelessWidget {
                     TextButton(
                       style: TextButton.styleFrom(
                           padding: const EdgeInsets.all(0)),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserProfile(),
+                          ),
+                        );
+                      },
                       child: const Text("Show profile"),
                     ),
                   ],
@@ -184,7 +194,14 @@ class AuthorizeProfile extends StatelessWidget {
                   .zero, // No rounded corners, sharp rectangle edges
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PersonalInformation(),
+              ),
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(

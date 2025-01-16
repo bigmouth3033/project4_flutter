@@ -27,7 +27,7 @@ class FavouriteCubit extends Cubit<FavouriteState> {
     if (state is UserSuccess) {
       try {
         emit(FavouriteLoading());
-        userId = state.user.id!;
+        userId = state.user.id;
         var response = await apiService
             .get("favouriteCM/getFavourites", params: {"userId": userId});
         var customResult = CustomResult.fromJson(response);

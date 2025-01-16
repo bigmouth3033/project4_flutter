@@ -12,6 +12,7 @@ import 'package:project4_flutter/shared/bloc/booking/booking.dart';
 import 'package:project4_flutter/shared/bloc/booking/date_booking.dart';
 import 'package:project4_flutter/shared/bloc/booking/guest_booking.dart';
 import 'package:project4_flutter/shared/bloc/booking/transaction.dart';
+import 'package:project4_flutter/shared/bloc/city_cubit/city_cubit.dart';
 import 'package:project4_flutter/shared/bloc/favourite_cubit/favourite_cubit.dart';
 import 'package:project4_flutter/shared/bloc/filter_cubit/filter_cubit.dart';
 import 'package:project4_flutter/shared/bloc/listing_list_cubit/listing_list_cubit.dart';
@@ -108,6 +109,9 @@ void main() async {
         ),
         BlocProvider(
           create: (_) => TransactionCubit(),
+        ),
+        BlocProvider(
+          create: (_) => CityCubit(), // Provide the Cubit
         ),
       ],
       child: App(androidSdkVersion: androidSdkVersion),

@@ -114,9 +114,17 @@ class _DatePickerModalState extends State<DatePickerModal> {
           DateTime.now().month + getProperty().maximumMonthPreBook,
           DateTime.now().day);
     }
+
     return WillPopScope(
       onWillPop: () async {
-        if (tempStart != null && tempEnd != null) {
+        //sua code
+        final dates = context.read<DateBookingCubit>();
+        if (dates.startDate != null && dates.endDate != null) {
+          context
+              .read<DateBookingCubit>()
+              .updateDates(dates.startDate, dates.endDate);
+          Navigator.pop(context);
+        } else {
           context.read<DateBookingCubit>().updateDates(tempStart, tempEnd);
           Navigator.pop(context);
         }
@@ -148,10 +156,18 @@ class _DatePickerModalState extends State<DatePickerModal> {
                           IconButton(
                             icon: const Icon(Icons.arrow_back, size: 25),
                             onPressed: () {
-                              context
-                                  .read<DateBookingCubit>()
-                                  .updateDates(tempStart, tempEnd);
-                              Navigator.pop(context);
+                              // sua code
+                              if (_startDate != null && _endDate != null) {
+                                context
+                                    .read<DateBookingCubit>()
+                                    .updateDates(_startDate, _endDate);
+                                Navigator.pop(context);
+                              } else {
+                                context
+                                    .read<DateBookingCubit>()
+                                    .updateDates(tempStart, tempEnd);
+                                Navigator.pop(context);
+                              }
                             },
                           ),
                         ],
@@ -174,122 +190,127 @@ class _DatePickerModalState extends State<DatePickerModal> {
                               ],
                             ),
                             const SizedBox(height: 30),
-                            TableCalendar(
-                              headerStyle: const HeaderStyle(
-                                formatButtonVisible: false,
-                                titleCentered: true,
-                              ),
-                              focusedDay: _startDate ?? firstDay,
-                              firstDay: firstDay,
-                              lastDay: lastDay,
-                              calendarFormat: CalendarFormat.month,
-                              enabledDayPredicate: (day) {
-                                return !getUnavailableDates().any(
-                                  (date) => isSameDay(date, day),
-                                );
-                              },
-                              selectedDayPredicate: (day) {
-                                if (_startDate != null && _endDate != null) {
-                                  return day.isAfter(_startDate) &&
-                                          day.isBefore(_endDate) ||
-                                      day.isAtSameMomentAs(_startDate) ||
-                                      day.isAtSameMomentAs(_endDate);
-                                } else if (_startDate != null &&
-                                    _endDate == null) {
-                                  return day.isAtSameMomentAs(_startDate);
-                                }
-                                return false;
-                              },
-                              onDaySelected: (selectedDay, focusedDay) {
-                                setState(() {
-                                  DateTime? tempStartDate = _startDate;
-                                  DateTime? tempEndDate = _endDate;
-
-                                  if (tempStartDate != null &&
-                                      tempEndDate != null) {
-                                    tempStart = tempStartDate;
-                                    tempEnd = tempEndDate;
+                            Container(
+                              height: 400,
+                              child: TableCalendar(
+                                headerStyle: const HeaderStyle(
+                                  formatButtonVisible: false,
+                                  titleCentered: true,
+                                ),
+                                focusedDay: _startDate ?? firstDay,
+                                firstDay: firstDay,
+                                lastDay: lastDay,
+                                calendarFormat: CalendarFormat.month,
+                                enabledDayPredicate: (day) {
+                                  return !getUnavailableDates().any(
+                                    (date) => isSameDay(date, day),
+                                  );
+                                },
+                                selectedDayPredicate: (day) {
+                                  if (_startDate != null && _endDate != null) {
+                                    return day.isAfter(_startDate) &&
+                                            day.isBefore(_endDate) ||
+                                        day.isAtSameMomentAs(_startDate) ||
+                                        day.isAtSameMomentAs(_endDate);
+                                  } else if (_startDate != null &&
+                                      _endDate == null) {
+                                    return day.isAtSameMomentAs(_startDate);
                                   }
-                                  if (tempStartDate == null &&
-                                      tempEndDate == null) {
-                                    tempStartDate = selectedDay;
-                                  } else if (tempStartDate != null &&
-                                      tempEndDate == null) {
-                                    if (selectedDay.isBefore(tempStartDate)) {
-                                      tempEndDate = tempStartDate;
+                                  return false;
+                                },
+                                onDaySelected: (selectedDay, focusedDay) {
+                                  setState(() {
+                                    DateTime? tempStartDate = _startDate;
+                                    DateTime? tempEndDate = _endDate;
+
+                                    if (tempStartDate != null &&
+                                        tempEndDate != null) {
+                                      tempStart = tempStartDate;
+                                      tempEnd = tempEndDate;
+                                    }
+                                    if (tempStartDate == null &&
+                                        tempEndDate == null) {
                                       tempStartDate = selectedDay;
-                                    } else {
-                                      tempEndDate = selectedDay;
-                                    }
-                                  } else if (tempStartDate != null &&
-                                      tempEndDate != null) {
-                                    tempStartDate = selectedDay;
-                                    tempEndDate = null;
-                                  }
-
-                                  if (tempStartDate != null &&
-                                      tempEndDate != null) {
-                                    List<DateTime> dateListBook = [];
-                                    DateTime currentDate = tempStartDate;
-                                    while (currentDate.isBefore(tempEndDate) ||
-                                        currentDate
-                                            .isAtSameMomentAs(tempEndDate)) {
-                                      dateListBook.add(currentDate);
-                                      currentDate =
-                                          currentDate.add(Duration(days: 1));
-                                    }
-
-                                    bool isContain = false;
-                                    for (var date in dateListBook) {
-                                      if (getUnavailableDates().any(
-                                          (unavailableDate) => isSameDay(
-                                              date, unavailableDate))) {
-                                        isContain = true;
-                                        break;
+                                    } else if (tempStartDate != null &&
+                                        tempEndDate == null) {
+                                      if (selectedDay.isBefore(tempStartDate)) {
+                                        tempEndDate = tempStartDate;
+                                        tempStartDate = selectedDay;
+                                      } else {
+                                        tempEndDate = selectedDay;
                                       }
-                                    }
-
-                                    if (isContain) {
-                                      showErrorDialog(context,
-                                          'Some of the selected dates are not available.');
-                                      tempStartDate = null;
+                                    } else if (tempStartDate != null &&
+                                        tempEndDate != null) {
+                                      tempStartDate = selectedDay;
                                       tempEndDate = null;
-                                    } else {
-                                      final stayDuration = tempEndDate
-                                              .difference(tempStartDate)
-                                              .inDays +
-                                          1;
-                                      bool violatesStayLimit = false;
+                                    }
 
-                                      if (getProperty().maximumStay != null &&
-                                          stayDuration >
-                                              getProperty().maximumStay!) {
-                                        violatesStayLimit = true;
-                                        showErrorDialog(context,
-                                            'The stay duration cannot exceed ${getProperty().maximumStay} nights.');
+                                    if (tempStartDate != null &&
+                                        tempEndDate != null) {
+                                      List<DateTime> dateListBook = [];
+                                      DateTime currentDate = tempStartDate;
+                                      while (currentDate
+                                              .isBefore(tempEndDate) ||
+                                          currentDate
+                                              .isAtSameMomentAs(tempEndDate)) {
+                                        dateListBook.add(currentDate);
+                                        currentDate =
+                                            currentDate.add(Duration(days: 1));
                                       }
 
-                                      if (getProperty().minimumStay != null &&
-                                          stayDuration <
-                                              getProperty().minimumStay!) {
-                                        violatesStayLimit = true;
-                                        showErrorDialog(context,
-                                            'The stay duration must be at least $getProperty().minimumStay nights.');
+                                      bool isContain = false;
+                                      for (var date in dateListBook) {
+                                        if (getUnavailableDates().any(
+                                            (unavailableDate) => isSameDay(
+                                                date, unavailableDate))) {
+                                          isContain = true;
+                                          break;
+                                        }
                                       }
 
-                                      if (violatesStayLimit) {
+                                      if (isContain) {
+                                        showErrorDialog(context,
+                                            'Some of the selected dates are not available.');
                                         tempStartDate = null;
                                         tempEndDate = null;
+                                      } else {
+                                        final stayDuration = tempEndDate
+                                                .difference(tempStartDate)
+                                                .inDays +
+                                            1;
+                                        bool violatesStayLimit = false;
+
+                                        if (getProperty().maximumStay != null &&
+                                            stayDuration >
+                                                getProperty().maximumStay!) {
+                                          violatesStayLimit = true;
+                                          showErrorDialog(context,
+                                              'The stay duration cannot exceed ${getProperty().maximumStay} nights.');
+                                        }
+
+                                        if (getProperty().minimumStay != null &&
+                                            stayDuration <
+                                                getProperty().minimumStay!) {
+                                          violatesStayLimit = true;
+                                          showErrorDialog(context,
+                                              'The stay duration must be at least $getProperty().minimumStay nights.');
+                                        }
+
+                                        if (violatesStayLimit) {
+                                          tempStartDate = null;
+                                          tempEndDate = null;
+                                        }
                                       }
                                     }
-                                  }
 
-                                  context
-                                      .read<DateBookingCubit>()
-                                      .updateDates(tempStartDate, tempEndDate);
-                                });
-                              },
-                              headerVisible: true,
+                                    context
+                                        .read<DateBookingCubit>()
+                                        .updateDates(
+                                            tempStartDate, tempEndDate);
+                                  });
+                                },
+                                headerVisible: true,
+                              ),
                             ),
                             BlocBuilder<GuestBookingCubit, GuestBookingState>(
                                 builder: (context, state) {
@@ -337,7 +358,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                                   shape: const CircleBorder(),
                                                 ),
                                                 child: const Icon(Icons.remove,
-                                                    size: 15),
+                                                    size: 15,
+                                                    color: Colors.black),
                                               ),
                                               Text(adult.toString(),
                                                   style: const TextStyle(
@@ -364,7 +386,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                                   shape: const CircleBorder(),
                                                 ),
                                                 child: const Icon(Icons.add,
-                                                    size: 15),
+                                                    size: 15,
+                                                    color: Colors.black),
                                               ),
                                             ],
                                           )
@@ -396,7 +419,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                                   shape: const CircleBorder(),
                                                 ),
                                                 child: const Icon(Icons.remove,
-                                                    size: 15),
+                                                    size: 15,
+                                                    color: Colors.black),
                                               ),
                                               Text(children.toString(),
                                                   style: const TextStyle(
@@ -424,7 +448,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                                   shape: const CircleBorder(),
                                                 ),
                                                 child: const Icon(Icons.add,
-                                                    size: 15),
+                                                    size: 15,
+                                                    color: Colors.black),
                                               ),
                                             ],
                                           )

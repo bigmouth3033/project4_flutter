@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/travel/widgets/filter_popup.dart';
+import 'package:project4_flutter/features/travel/widgets/search_popup.dart';
 import 'package:project4_flutter/features/travel/widgets/travel_category.dart';
 
 class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -58,7 +59,20 @@ class TravelHeader extends StatelessWidget implements PreferredSizeWidget {
                           ],
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (BuildContext context) {
+                                return const SearchPopup();
+                              },
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             padding: const EdgeInsetsDirectional.symmetric(

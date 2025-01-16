@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project4_flutter/features/property_detail/property_detail.dart';
-import 'package:project4_flutter/features/travel/travel.dart';
+
+import 'package:project4_flutter/home_screen.dart';
 
 Future<void> showErrorDialogTransaction(
     BuildContext context, String message, String title) async {
@@ -20,9 +20,11 @@ Future<void> showErrorDialogTransaction(
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                //sua code
+
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Travel()),
-                  (route) => false,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      (route) => false,
                 );
               },
               child: const Text('OK'),
