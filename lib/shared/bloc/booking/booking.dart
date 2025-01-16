@@ -37,7 +37,8 @@ class BookingCubit extends Cubit<BookingState> {
         return null;
       }
     } else {
-      emit(BookingFail("Host cannot book their own property"));
+      //sua code
+      emit(BookingFail("Login for booking"));
       return null;
     }
   }
@@ -60,12 +61,16 @@ class BookingCubit extends Cubit<BookingState> {
     try {
       ApiService apiService = ApiService();
       final response =
-      await apiService.post("bookingCM/add", body: booking.toJson());
+          await apiService.post("bookingCM/add", body: booking.toJson());
       final customResult = CustomResult.fromJson(response);
       if (customResult.status == 200) {
         final booking = Booking.fromJson(customResult.data);
         emit(BookingSuccess(booking));
         return booking;
+        // sua code
+      } else if (customResult.status == 400) {
+        emit(BookingFail("Host cannot book their own property"));
+        return null;
       } else {
         return null;
       }

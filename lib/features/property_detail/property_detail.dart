@@ -46,7 +46,6 @@ class PropertyDetail extends StatefulWidget {
 class _PropertyDetailState extends State<PropertyDetail> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     print(widget.propertyId);
   }
@@ -61,96 +60,105 @@ class _PropertyDetailState extends State<PropertyDetail> {
         context.read<DateBookingCubit>();
       },
     );
-    return RefreshIndicator(
-      onRefresh: () {
-        return context.read<PropertyCubit>().getProperty(widget.propertyId);
+    // sua code
+    return WillPopScope(
+      onWillPop: () async {
+        context.read<DateBookingCubit>().updateDates(null, null);
+        return true;
       },
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<PropertyCubit, PropertyState>(
-            listener: (context, state) {
-              if (state is PropertyError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
+      child: RefreshIndicator(
+        onRefresh: () {
+          return context.read<PropertyCubit>().getProperty(widget.propertyId);
+        },
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<PropertyCubit, PropertyState>(
+              listener: (context, state) {
+                if (state is PropertyError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<PropertyCubit, PropertyState>(
+            builder: (context, propertyState) {
+              if (propertyState is PropertyLoading) {
+                return const Scaffold(
+                    body: Center(
+                  child: LoadingIcon(size: 50),
+                ));
+              } else if (propertyState is PropertySuccess) {
+                String addressCode = propertyState.property.addressCode;
+
+                return BlocBuilder<CategoryCubit, int?>(
+                  builder: (context, categoryState) {
+                    bool loading = context.read<CategoryCubit>().isLoading;
+
+                    if (loading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (context.read<CategoryCubit>().categoryList.isNotEmpty) {
+                      final categories =
+                          context.read<CategoryCubit>().categoryList;
+                      final category = categories.firstWhere((cat) =>
+                          cat.id == propertyState.property.propertyCategoryID);
+                      final aboutProperty =
+                          propertyState.property.aboutProperty;
+                      final startArv =
+                          (propertyState.property.cleanlinessScore +
+                                  propertyState.property.communicationScore +
+                                  propertyState.property.accuracyScore +
+                                  propertyState.property.checkinScore) /
+                              4;
+                      return Scaffold(
+                        backgroundColor: Colors.white,
+                        body: SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              buildPropertyImagesView(propertyState),
+                              buildAddress(propertyState, addressCode, category,
+                                  startArv),
+                              buildAmenity(propertyState),
+                              buildTilteOffers(),
+                              buildViewAmenity(propertyState),
+                              buildShowAmenity(context, propertyState),
+                              const CustomDivider(),
+                              buildAbout(aboutProperty),
+                              buildShowAbout(
+                                  context, aboutProperty, propertyState),
+                              const CustomDivider(),
+                              buildCheckCalendar(propertyState, startArv),
+                              const CustomDivider(),
+                              buildTilteHost(),
+                              buildMeetHost(propertyState, startArv),
+                              const CustomDivider(),
+                              buildTilteRule(),
+                              buildRule(propertyState),
+                              buildShowRule(context, propertyState),
+                              const CustomDivider(),
+                              buildCancel(propertyState),
+                            ],
+                          ),
+                        ),
+                        bottomNavigationBar:
+                            buildBottomBar(propertyState, startArv),
+                      );
+                    }
+
+                    return const Center(
+                        child: Text("Error: ${"Cannot load category"}"));
+                  },
                 );
+              } else if (propertyState is PropertyError) {
+                return Center(child: Text("Error: ${propertyState.message}"));
               }
+              return const Center(child: Text("No data available."));
             },
           ),
-        ],
-        child: BlocBuilder<PropertyCubit, PropertyState>(
-          builder: (context, propertyState) {
-            if (propertyState is PropertyLoading) {
-              return const Scaffold(
-                  body: Center(
-                child: LoadingIcon(size: 50),
-              ));
-            } else if (propertyState is PropertySuccess) {
-              String addressCode = propertyState.property.addressCode;
-
-              return BlocBuilder<CategoryCubit, int?>(
-                builder: (context, categoryState) {
-                  bool loading = context.read<CategoryCubit>().isLoading;
-
-                  if (loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (context.read<CategoryCubit>().categoryList.isNotEmpty) {
-                    final categories =
-                        context.read<CategoryCubit>().categoryList;
-                    final category = categories.firstWhere((cat) =>
-                        cat.id == propertyState.property.propertyCategoryID);
-                    final aboutProperty = propertyState.property.aboutProperty;
-                    final startArv = (propertyState.property.cleanlinessScore +
-                            propertyState.property.communicationScore +
-                            propertyState.property.accuracyScore +
-                            propertyState.property.checkinScore) /
-                        4;
-                    return Scaffold(
-                      backgroundColor: Colors.white,
-                      body: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          children: [
-                            buildPropertyImagesView(propertyState),
-                            buildAddress(
-                                propertyState, addressCode, category, startArv),
-                            buildAmenity(propertyState),
-                            buildTilteOffers(),
-                            buildViewAmenity(propertyState),
-                            buildShowAmenity(context, propertyState),
-                            const CustomDivider(),
-                            buildAbout(aboutProperty),
-                            buildShowAbout(
-                                context, aboutProperty, propertyState),
-                            const CustomDivider(),
-                            buildCheckCalendar(propertyState, startArv),
-                            const CustomDivider(),
-                            buildTilteHost(),
-                            buildMeetHost(propertyState, startArv),
-                            const CustomDivider(),
-                            buildTilteRule(),
-                            buildRule(propertyState),
-                            buildShowRule(context, propertyState),
-                            const CustomDivider(),
-                            buildCancel(propertyState),
-                          ],
-                        ),
-                      ),
-                      bottomNavigationBar:
-                          buildBottomBar(propertyState, startArv),
-                    );
-                  }
-
-                  return const Center(
-                      child: Text("Error: ${"Cannot load category"}"));
-                },
-              );
-            } else if (propertyState is PropertyError) {
-              return Center(child: Text("Error: ${propertyState.message}"));
-            }
-            return const Center(child: Text("No data available."));
-          },
         ),
       ),
     );
@@ -170,7 +178,6 @@ class _PropertyDetailState extends State<PropertyDetail> {
           builder: (context, state) {
         final startDate = context.read<DateBookingCubit>().startDate;
         final endDate = context.read<DateBookingCubit>().endDate;
-
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -260,44 +267,60 @@ class _PropertyDetailState extends State<PropertyDetail> {
                         startDate = startDate.add(const Duration(days: 1));
                       }
                       int nightBase = dateList.length -
-                          showExceptionDates(tempStart, tempEnd, exceptionDates).length;
-                      double basePriceTotal = nightBase * propertyState.property.basePrice;
+                          showExceptionDates(tempStart, tempEnd, exceptionDates)
+                              .length;
+                      double basePriceTotal =
+                          nightBase * propertyState.property.basePrice;
                       double exceptionPriceTotal = 0;
-                      for (var date
-                      in showExceptionDates(tempStart, tempEnd, exceptionDates)) {
+                      for (var date in showExceptionDates(
+                          tempStart, tempEnd, exceptionDates)) {
                         exceptionPriceTotal += date.basePrice;
                       }
                       return basePriceTotal + exceptionPriceTotal;
                     }
+
                     double totalBasePrice;
-                    List<ExceptionDate>? exceptionDates = propertyState.property.exceptionDates;
+                    List<ExceptionDate>? exceptionDates =
+                        propertyState.property.exceptionDates;
                     if (exceptionDates == null) {
-                      totalBasePrice = (endDate!.difference(startDate!).inDays + 1) *
-                          propertyState.property.basePrice;
+                      totalBasePrice =
+                          (endDate!.difference(startDate!).inDays + 1) *
+                              propertyState.property.basePrice;
                     } else {
                       totalBasePrice = calculate_total_base_price(
                           startDate, endDate, exceptionDates);
                     }
                     double discount = 0;
                     if (endDate!.difference(startDate!).inDays + 1 >= 28) {
-                      discount = totalBasePrice * propertyState.property.monthlyDiscount / 100;
+                      discount = totalBasePrice *
+                          propertyState.property.monthlyDiscount /
+                          100;
                     } else if (endDate.difference(startDate).inDays + 1 >= 7 &&
                         endDate.difference(startDate).inDays + 1 < 28) {
-                      discount = totalBasePrice * propertyState.property.weeklyDiscount / 100;
+                      discount = totalBasePrice *
+                          propertyState.property.weeklyDiscount /
+                          100;
                     }
                     print("totalBasePrice: " + totalBasePrice.toString());
-                    print("hostFee: " + ((totalBasePrice - discount)*0.9).toString());
-                    print("websiteFee: " + ((totalBasePrice - discount)*0.05).toString());
-                    print("amount: " + ((totalBasePrice - discount)*1.05).toString());
+                    print("hostFee: " +
+                        ((totalBasePrice - discount) * 0.9).toString());
+                    print("websiteFee: " +
+                        ((totalBasePrice - discount) * 0.05).toString());
+                    print("amount: " +
+                        ((totalBasePrice - discount) * 1.05).toString());
                     final booking = BookingDto(
                       children: guestBooking.children,
                       adult: guestBooking.adult,
-                      hostFee: double.parse(((totalBasePrice - discount)*0.9).toStringAsFixed(2)),
-                      websiteFee: double.parse(((totalBasePrice - discount)*0.05).toStringAsFixed(2)),
+                      hostFee: double.parse(((totalBasePrice - discount) * 0.9)
+                          .toStringAsFixed(2)),
+                      websiteFee: double.parse(
+                          ((totalBasePrice - discount) * 0.05)
+                              .toStringAsFixed(2)),
                       customerId: userBooking?.id,
                       hostId: propertyState.property.userId,
                       propertyId: propertyState.property.id,
-                      amount: double.parse(((totalBasePrice - discount)*1.05).toStringAsFixed(2)),
+                      amount: double.parse(((totalBasePrice - discount) * 1.05)
+                          .toStringAsFixed(2)),
                       checkInDay: datesCubit.startDate!,
                       checkOutDay:
                           datesCubit.endDate!.add(const Duration(days: 1)),
@@ -337,8 +360,8 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFFF0000),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 55, vertical: 18),
+                  // sua code
+                  minimumSize: const Size(160, 60),
                   // Padding
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -361,7 +384,6 @@ class _PropertyDetailState extends State<PropertyDetail> {
                           builder: (context) => DatePickerModal(
                               startArv: startArv,
                               propertyId: widget.propertyId)));
-
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF0000),
@@ -772,10 +794,10 @@ class _PropertyDetailState extends State<PropertyDetail> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(2, 3),
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: const Offset(1, 1),
             ),
           ],
           borderRadius: BorderRadius.circular(10),
@@ -793,8 +815,8 @@ class _PropertyDetailState extends State<PropertyDetail> {
                               propertyState.property.user!.avatar!.isNotEmpty
                           ? Image.network(
                               propertyState.property.user!.avatar!,
-                              width: 100,
-                              height: 100,
+                              width: 90,
+                              height: 90,
                               fit: BoxFit.cover,
                             )
                           : CircleAvatar(
@@ -816,8 +838,25 @@ class _PropertyDetailState extends State<PropertyDetail> {
                   Text(
                     "${propertyState.property.user!.firstName} ${propertyState.property.user!.lastName}",
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                        fontSize: 14, fontWeight: FontWeight.bold),
                   ),
+                  Text(
+                    (() {
+                      if (propertyState.property.userBadgeId == 2) {
+                        return 'Super host';
+                      } else if (propertyState.property.userBadgeId == 4) {
+                        return 'Verified User';
+                      } else if (propertyState.property.userBadgeId == 5) {
+                        return 'Top Rated Host';
+                      } else {
+                        return 'Traveler';
+                      }
+                    })(),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -892,7 +931,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                         )
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 17),
                     Text(
                       () {
                         final hostTime = calculateHostTime(
@@ -948,28 +987,17 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 MaterialPageRoute(
                     builder: (context) => DatePickerModal(
                         startArv: startArv, propertyId: widget.propertyId)));
-            // showModalBottomSheet(
-            //   context: context,
-            //   isScrollControlled: true,
-            //   builder: (BuildContext context) {
-            //     return DatePickerModal(
-            //       startArv: startArv,
-            //       propertyId: widget.propertyId,
-            //     );
-            //   },
-            // );
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Màu nền
             minimumSize: const Size(500, 50),
-
             elevation: 0,
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Row(children: [
               Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
@@ -986,9 +1014,11 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 ],
               ),
               const Spacer(),
+              // sua code
               const Icon(
                 Icons.arrow_right,
                 size: 40,
+                color: Colors.black,
               )
             ]),
           ));
@@ -1252,10 +1282,13 @@ class _PropertyDetailState extends State<PropertyDetail> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0), // Bo tròn các góc
             side: const BorderSide(
-              color: Colors.black12, // Màu của border
+              color: Colors.white24, // Màu của border
               width: 1.0, // Độ dày của border
             ),
+
+
           ),
+
         ),
         child: Text(
           'Show ${propertyState.property.amenity.length} amenity',

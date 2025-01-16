@@ -6,6 +6,7 @@ import 'package:project4_flutter/features/property_detail/models/transaction.dar
 import 'package:project4_flutter/features/property_detail/widgets/credit_card_ui.dart';
 import 'package:project4_flutter/features/property_detail/widgets/show_popup_transaction.dart';
 import 'package:project4_flutter/features/travel/travel.dart';
+import 'package:project4_flutter/home_screen.dart';
 import 'package:project4_flutter/shared/bloc/booking/date_booking.dart';
 import 'package:project4_flutter/shared/bloc/booking/transaction.dart';
 
@@ -33,6 +34,7 @@ class _TransactionState extends State<TransactionModal> {
   void initState() {
     super.initState();
     booking = widget.booking;
+
   }
 
   bool _validateFields() {
@@ -85,10 +87,11 @@ class _TransactionState extends State<TransactionModal> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        // sua code
         context.read<DateBookingCubit>().updateDates(null, null);
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const Travel()),
-          (route) => false,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+              (route) => false,
         );
         return true;
       },
@@ -99,6 +102,7 @@ class _TransactionState extends State<TransactionModal> {
         backgroundColor: Colors.black,
         body: BlocBuilder<TransactionCubit, TransactionState>(
           builder: (context, state) {
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(26),
@@ -185,10 +189,21 @@ class _TransactionState extends State<TransactionModal> {
                               borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
+                          //sua code
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(2),
+                            TextInputFormatter.withFunction((oldValue, newValue) {
+                              if (newValue.text.isNotEmpty && int.tryParse(newValue.text) != null) {
+                                int value = int.parse(newValue.text);
+                                if (value > 12) {
+                                  return oldValue;
+                                }
+                              }
+                              return newValue;
+                            }),
                           ],
+
                           style: const TextStyle(
                             color: Colors.white,
                           ),
@@ -232,6 +247,7 @@ class _TransactionState extends State<TransactionModal> {
                               borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
+
                           style: const TextStyle(
                             color: Colors.white,
                           ),

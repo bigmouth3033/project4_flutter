@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:project4_flutter/features/authentication/authentication.dart';
 import 'package:project4_flutter/features/property_detail/models/booking_dto.dart';
 import 'package:project4_flutter/features/property_detail/models/exception_date.dart';
 import 'package:project4_flutter/features/property_detail/models/property.dart';
@@ -327,15 +328,25 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                         padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
                         width: double.infinity,
                         child: TextButton(
+                          // sua code
                           onPressed: () {
-                            if (awaitBooking) {
-                              return null;
-                            }
-                            setState(() {
-                              awaitBooking = true;
-                            });
+                            final userCubit = context.read<UserCubit>().state;
+                            if (userCubit is UserSuccess) {
+                              if (awaitBooking) {
+                                return null;
+                              }
+                              setState(() {
+                                awaitBooking = true;
+                              });
+                              createBooking(context, discount, totalBasePrice);
+                            } else {
 
-                            createBooking(context , discount,totalBasePrice);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Authentication()));
+                            }
+                            ;
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: const Color(0xFFFF0000),
@@ -366,7 +377,8 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
     );
   }
 
-  Future<void> createBooking(BuildContext context, double discount , double totalBasePrice) async {
+  Future<void> createBooking(
+      BuildContext context, double discount, double totalBasePrice) async {
     final bookingCubit = context.read<BookingCubit>();
     final datesCubit = context.read<DateBookingCubit>();
     final guestBooking = context.read<GuestBookingCubit>();
@@ -376,16 +388,18 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
       userBooking = state.user;
     }
 
-
     final booking = BookingDto(
       children: guestBooking.children,
       adult: guestBooking.adult,
-      hostFee: double.parse(((totalBasePrice - discount)*0.9).toStringAsFixed(2)),
-      websiteFee:double.parse(( (totalBasePrice - discount) *0.05).toStringAsFixed(2)),
+      hostFee:
+          double.parse(((totalBasePrice - discount) * 0.9).toStringAsFixed(2)),
+      websiteFee:
+          double.parse(((totalBasePrice - discount) * 0.05).toStringAsFixed(2)),
       customerId: userBooking?.id,
       hostId: getProperty().userId,
       propertyId: getProperty().id,
-      amount: double.parse(((totalBasePrice - discount) * 1.05).toStringAsFixed(2)),
+      amount:
+          double.parse(((totalBasePrice - discount) * 1.05).toStringAsFixed(2)),
       checkInDay: datesCubit.startDate!,
       checkOutDay: datesCubit.endDate!.add(const Duration(days: 1)),
     );
@@ -406,7 +420,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
         showErrorDialogTransaction(context, message, "Error");
       }
       if (rs != null) {
-        context.read<DateBookingCubit>().updateDates(null, null);
+       //sua code
         Navigator.push(
             context,
             MaterialPageRoute(

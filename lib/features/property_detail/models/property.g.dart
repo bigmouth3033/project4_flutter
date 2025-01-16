@@ -68,6 +68,7 @@ Property _$PropertyFromJson(Map<String, dynamic> json) => Property(
       accuracyScore: (json['accuracyScore'] as num).toInt(),
       cleanlinessScore: (json['cleanlinessScore'] as num).toInt(),
       communicationScore: (json['communicationScore'] as num).toInt(),
+    userBadgeId: (json['userBadgeId'] as num).toInt(),
     );
 
 Map<String, dynamic> _$PropertyToJson(Property instance) => <String, dynamic>{
@@ -116,4 +117,5 @@ Map<String, dynamic> _$PropertyToJson(Property instance) => <String, dynamic>{
       'accuracyScore': instance.accuracyScore,
       'checkinScore': instance.checkinScore,
       'communicationScore': instance.communicationScore,
-    };
+      'userbadgeId': instance.userBadgeId
+};
