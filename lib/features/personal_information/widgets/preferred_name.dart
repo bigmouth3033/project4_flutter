@@ -58,6 +58,7 @@ class _PreferredNameState extends State<PreferredName> {
         TextEditingController(text: user!.preferredName);
 
     return Container(
+      padding: EdgeInsets.all(10),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

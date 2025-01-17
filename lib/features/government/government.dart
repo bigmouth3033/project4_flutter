@@ -90,10 +90,11 @@ class _GovernmentState extends State<Government> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Government"),
+        title: Text("Government Information"),
         backgroundColor: Colors.white,
       ),
       body: Container(
+        padding: EdgeInsets.all(15),
           color: Colors.white,
           width: screenWidth,
           height: screenHeight - appBarHeight - statusBarHeight,
@@ -166,7 +167,10 @@ class _GovernmentState extends State<Government> {
                             print('Button Pressed!');
                           },
                           child: Row(
-                            children: [Icon(Icons.star), Text("Identity Card")],
+                            children: [Icon(Icons.car_crash_sharp,color: Colors.black,),SizedBox(width: 10,) ,Text("Identity Card",style:
+                              TextStyle(
+                                color: Colors.black
+                              ),)],
                           ),
                         ),
                       ),
@@ -189,8 +193,11 @@ class _GovernmentState extends State<Government> {
                           },
                           child: Row(
                             children: [
-                              Icon(Icons.star),
-                              Text("Driver License")
+                              Icon(Icons.perm_identity, color: Colors.black,),
+                              SizedBox(width: 10,),
+                              Text("Driver License",style: TextStyle(
+                                color: Colors.black
+                              ),)
                             ],
                           ),
                         ),

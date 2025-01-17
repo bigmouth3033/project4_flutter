@@ -75,6 +75,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
         TextEditingController(text: "");
 
     return Container(
+      padding: EdgeInsets.all(10),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

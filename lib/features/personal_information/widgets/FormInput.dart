@@ -62,6 +62,7 @@ class _InputFromState extends State<Forminput> {
 
 
     return Container(
+      padding: EdgeInsets.all(10),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
