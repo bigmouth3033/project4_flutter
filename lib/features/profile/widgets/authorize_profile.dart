@@ -16,6 +16,7 @@ import '../../../shared/bloc/listing_list_cubit/listing_list_cubit.dart';
 import '../../../shared/bloc/message_room_cubit/message_room_cubit.dart';
 import '../../../shared/bloc/reservation_cubit/reservation_cubit.dart';
 import '../../../shared/bloc/trip_cubit/trip_cubit.dart';
+import '../../government/government.dart';
 import '../../user_profile/user_profile.dart';
 
 class AuthorizeProfile extends StatelessWidget {
@@ -301,7 +302,13 @@ class AuthorizeProfile extends StatelessWidget {
                   .zero, // No rounded corners, sharp rectangle edges
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Government(),
+                ));
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -323,7 +330,7 @@ class AuthorizeProfile extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    "Payment and payouts",
+                    "Government information",
                     style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
                   Spacer(),

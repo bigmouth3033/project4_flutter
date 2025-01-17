@@ -43,7 +43,8 @@ class _PreferredNameState extends State<PreferredName> {
         await context.read<UserCubit>().initializeUser();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something when wrong when update preferred Name")),
+          SnackBar(
+              content: Text("Something when wrong when update preferred Name")),
         );
       }
     }
@@ -58,6 +59,7 @@ class _PreferredNameState extends State<PreferredName> {
         TextEditingController(text: user!.preferredName);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

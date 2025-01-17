@@ -60,6 +60,7 @@ class _InputFromState extends State<Forminput> {
         TextEditingController(text: user!.lastName);
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

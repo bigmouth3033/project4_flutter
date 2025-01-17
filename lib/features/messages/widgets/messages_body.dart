@@ -4,6 +4,7 @@ import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/add_friend_cubit.dart';
 import 'package:project4_flutter/features/messages/bloc/message_cubit/add_group_cubit.dart';
@@ -55,7 +56,7 @@ class _MessagesBodyState extends State<MessagesBody> {
     try {
       stompClient = StompClient(
         config: StompConfig.sockJS(
-          url: 'http://192.168.1.16:8010/ws', // WebSocket endpoint
+          url: 'http://${dotenv.env['API_URL']}}:8010/ws', // WebSocket endpoint
           onConnect: (StompFrame frame) {
             print("Connected to WebSocket");
             isConnected = true;
@@ -194,7 +195,14 @@ class _MessagesBodyState extends State<MessagesBody> {
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (context) {
-                    return const AddFriend();
+                    return MultiBlocProvider(providers: [
+                      BlocProvider(
+                        create: (_) => SearchFriendCubit(user.id.toString()),
+                      ),
+                      BlocProvider(
+                        create: (_) => AddFriendCubit(),
+                      )
+                    ], child: const AddFriend());
                   },
                 )).then((roomId) {
                   if (context.mounted && roomId != null) {

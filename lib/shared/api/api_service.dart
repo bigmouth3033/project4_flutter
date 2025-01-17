@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = "192.168.1.16:8080";
+  final String baseUrl = "${dotenv.env['API_URL']}:8080";
 
   ApiService();
 

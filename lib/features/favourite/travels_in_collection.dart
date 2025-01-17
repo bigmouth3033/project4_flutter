@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:project4_flutter/features/property_detail/property_detail.dart';
 
 import 'package:project4_flutter/shared/bloc/favourite_cubit/favourite_cubit.dart';
 import 'package:project4_flutter/shared/models/travel_entity.dart';
@@ -37,9 +38,9 @@ class _TravelsInCollectionState extends State<TravelsInCollection> {
       await getFavouriteCubit.getPropertiesFavourite(
           collectionName: widget.collectionName);
 
-      // Lấy dữ liệu từ Cubit
+      // Lấy dữ liệu từ Cubit và gán vào _travels
       setState(() {
-        _travels = getFavouriteCubit.propertiesInWishlist!;
+        _travels = getFavouriteCubit.propertiesInWishlist ?? [];
         _isLoading = false; // Kết thúc loading
       });
     } catch (e) {
@@ -72,20 +73,32 @@ class _TravelsInCollectionState extends State<TravelsInCollection> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator()) // Hiển thị khi đang tải
-          : ListView.builder(
-              itemCount: _travels.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: const EdgeInsets.all(13),
-                  child: FavouriteTravelCard(
-                    travel: _travels[index],
-                    collectionName: widget.collectionName,
-                  ),
-                );
-              },
-            ),
+          ? const Center(child: CircularProgressIndicator())
+          : _travels.isEmpty
+              ? const Center(child: Text("Your collection is empty"))
+              : ListView.builder(
+                  itemCount: _travels.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      padding: const EdgeInsets.all(13),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PropertyDetail(_travels[index].id),
+                            ),
+                          );
+                        },
+                        child: FavouriteTravelCard(
+                          travel: _travels[index],
+                          collectionName: widget.collectionName,
+                        ),
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

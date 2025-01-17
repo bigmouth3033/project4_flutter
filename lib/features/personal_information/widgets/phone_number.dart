@@ -24,7 +24,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
   Country? countrySelected;
   Future<List<Country>>? _countriesFuture;
   PersonalInformationService _personalInformationService =
-  new PersonalInformationService();
+      new PersonalInformationService();
 
   Future<List<Country>> loadCountries() async {
     final String response =
@@ -43,16 +43,17 @@ class _PhoneNumberState extends State<PhoneNumber> {
     setState(() {});
   }
 
-  void handlePutPhoneNumber(String phoneNumber) async{
+  void handlePutPhoneNumber(String phoneNumber) async {
     if (_formKey.currentState!.validate()) {
-      try{
-        PhoneNumberRequest phoneNumberRequest = PhoneNumberRequest(phoneNumber: "${countrySelected?.dialCode},$phoneNumber");
+      try {
+        PhoneNumberRequest phoneNumberRequest = PhoneNumberRequest(
+            phoneNumber: "${countrySelected?.dialCode},$phoneNumber");
         await _personalInformationService.putPhoneNumber(phoneNumberRequest);
         context.read<UserCubit>().initializeUser();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Phone number updated successfully")),
         );
-      }catch(e){
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Failed to update Phone number: $e")),
         );
@@ -75,6 +76,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
         TextEditingController(text: "");
 
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       width: screenWidth,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +128,7 @@ class _PhoneNumberState extends State<PhoneNumber> {
                                 hint: Text("Select a phone"),
                                 value: countrySelected,
                                 validator: (value) {
-                                  if(value == null){
+                                  if (value == null) {
                                     return "Select one";
                                   }
                                   return null;
@@ -169,8 +171,8 @@ class _PhoneNumberState extends State<PhoneNumber> {
                             validator: Validator.validatePhoneNumber,
                           ),
                           ElevatedButton(
-                            onPressed: () => handlePutPhoneNumber(
-                                 phoneInputController.text),
+                            onPressed: () =>
+                                handlePutPhoneNumber(phoneInputController.text),
                             child: Text(
                               "Save",
                               style: TextStyle(color: Colors.white),

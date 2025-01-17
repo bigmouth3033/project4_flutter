@@ -25,23 +25,25 @@ class _PersonalInformationState extends State<PersonalInformation> {
       appBar: AppBar(
         title: Text("Personal Information"),
       ),
-      body: BlocBuilder<UserCubit, UserState>(
-        builder: (context, state) {
-          var user = context.read<UserCubit>().loginUser;
-          return const Column(
-            children: [
-              Row(
-                children: [Forminput()],
-              ),
-              Row(
-                children: [PreferredName()],
-              ),
-              Row(
-                children: [PhoneNumber()],
-              )
-            ],
-          );
-        },
+      body: SingleChildScrollView(
+        child: BlocBuilder<UserCubit, UserState>(
+          builder: (context, state) {
+            var user = context.read<UserCubit>().loginUser;
+            return const Column(
+              children: [
+                Row(
+                  children: [Forminput()],
+                ),
+                Row(
+                  children: [PreferredName()],
+                ),
+                Row(
+                  children: [PhoneNumber()],
+                )
+              ],
+            );
+          },
+        ),
       ),
     );
   }

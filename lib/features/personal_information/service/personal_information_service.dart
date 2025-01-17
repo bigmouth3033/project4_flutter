@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project4_flutter/features/login_and_security/models/change_password_request.dart';
 import 'package:project4_flutter/features/login_and_security/models/otp_confirm_request.dart';
 import 'package:project4_flutter/features/personal_information/models/legal_name_request.dart';
@@ -10,8 +11,10 @@ import 'package:project4_flutter/features/user_profile/models/avatar_option_requ
 import 'package:project4_flutter/features/user_profile/models/user_refill_response.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
 
+import '../../government/models/government_request.dart';
+
 class PersonalInformationService {
-  final String baseUrl = "192.168.1.5:8080";
+  final String baseUrl = "${dotenv.env['API_URL']}:8080";
   var tokenStorage = TokenStorage();
 
   Future putLegalName(LegalNameRequest request) async {
@@ -132,5 +135,32 @@ class PersonalInformationService {
     });
 
     return UserRefillResponse.fromJson(json.decode(response.body));
+  }
+
+  Future putGovernment(GovernmentRequest request) async {
+    var token = await tokenStorage.getToken();
+    var uri = Uri.http(baseUrl, "/userCM/government");
+
+    final multipartRequest = http.MultipartRequest('PUT', uri);
+    multipartRequest.headers['Authorization'] = "Bearer $token";
+    multipartRequest.fields['IdType'] = request.idType.toString();
+    multipartRequest.fields['governmentCountry'] = request.governmentCountry;
+    multipartRequest.files.add(
+      await http.MultipartFile.fromPath(
+        'frontImage', // Tên tham số trong API
+        request.frontImageUri, // Đường dẫn của tệp
+      ),
+    );
+    multipartRequest.files.add(
+      await http.MultipartFile.fromPath(
+        'backImage', // Tên tham số trong API
+        request.backImageUri, // Đường dẫn của tệp
+      ),
+    );
+    try {
+      final response = await multipartRequest.send();
+    } catch (e) {
+      throw Exception('Failed to update Government Information');
+    }
   }
 }

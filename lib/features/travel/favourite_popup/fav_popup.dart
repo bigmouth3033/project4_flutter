@@ -8,6 +8,7 @@ import 'package:project4_flutter/shared/models/favourite_entity.dart';
 
 class FavPopup extends StatefulWidget {
   final int propertyId;
+
   const FavPopup({super.key, required this.propertyId});
 
   @override
@@ -16,6 +17,7 @@ class FavPopup extends StatefulWidget {
 
 class _FavPopupState extends State<FavPopup> {
   late FavouriteCubit getFavouriteCubit;
+
   // Declare a controller to handle the input from TextFormField
   final TextEditingController wishlistNameController = TextEditingController();
 
@@ -73,7 +75,8 @@ class _FavPopupState extends State<FavPopup> {
                   alignment: Alignment.center, // Căn giữa tiêu đề
                   children: [
                     Align(
-                      alignment: Alignment.centerLeft, // Đặt icon ở góc trái
+                      alignment: Alignment.centerLeft,
+                      // Đặt icon ở góc trái
                       child: IconButton(
                         onPressed: () {
                           Navigator.pop(context);
@@ -183,17 +186,20 @@ class _FavPopupState extends State<FavPopup> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
-                              title: const Text(
-                                "Create New Wishlist",
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              title: Center(
+                                child: const Text(
+                                  "Create New Wishlist",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   TextFormField(
-                                    controller:
-                                        wishlistNameController, // Kết nối controller
+                                    controller: wishlistNameController,
+                                    // Kết nối controller
                                     decoration: InputDecoration(
                                       labelText: "Wishlist Name",
                                       border: OutlineInputBorder(
@@ -201,6 +207,17 @@ class _FavPopupState extends State<FavPopup> {
                                             BorderRadius.circular(8.0),
                                       ),
                                     ),
+                                    maxLength: 20,
+                                    // Giới hạn 50 ký tự
+                                    buildCounter: (BuildContext context,
+                                        {int? currentLength,
+                                        int? maxLength,
+                                        bool? isFocused}) {
+                                      return Text(
+                                        '$currentLength/$maxLength',
+                                        style: TextStyle(color: Colors.grey),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
@@ -223,8 +240,8 @@ class _FavPopupState extends State<FavPopup> {
                                     if (wishlistName.isNotEmpty) {
                                       // Gọi createFavourite với wishlistName
                                       await getFavouriteCubit.createFavourite(
-                                        collectionName:
-                                            wishlistName, // Sử dụng tên wishlist từ TextFormField
+                                        collectionName: wishlistName,
+                                        // Sử dụng tên wishlist từ TextFormField
                                         propertyId: widget.propertyId,
                                       );
                                       if (context.mounted) {

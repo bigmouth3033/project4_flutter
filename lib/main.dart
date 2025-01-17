@@ -30,6 +30,7 @@ import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/models/dchc_dto.dart';
 import 'package:provider/provider.dart';
 import 'app.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 late String? fcmToken;
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -52,6 +53,7 @@ void main() async {
       deviceInfo is AndroidDeviceInfo ? deviceInfo.version.sdkInt : 0;
   await loadJsonAsset();
   databaseRef = FirebaseDatabase.instance.ref();
+  await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(
