@@ -44,7 +44,7 @@ class _FavouriteState extends State<Favourite> {
             return const LoadingIcon(size: 40);
           }
 
-          if (state is FavouriteSuccess) {
+          if (state is FavouriteSuccess || state is ChangeFavouriteSuccess) {
             final groupedCollections = getFavouriteCubit.favourites
                 .fold<Map<String, Map<String, dynamic>>>(
                   {},

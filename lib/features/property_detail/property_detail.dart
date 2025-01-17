@@ -7,9 +7,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:project4_flutter/features/authentication/authentication.dart';
 import 'package:project4_flutter/features/property_detail/models/booking_dto.dart';
 import 'package:project4_flutter/features/property_detail/models/exception_date.dart';
+import 'package:project4_flutter/features/property_detail/widgets/authentication_for_booking.dart';
 import 'package:project4_flutter/features/property_detail/widgets/checkout_details.dart';
 import 'package:project4_flutter/features/property_detail/widgets/custom_divider.dart';
 import 'package:project4_flutter/features/property_detail/widgets/date_picker_modal.dart';
@@ -355,13 +355,6 @@ class _PropertyDetailState extends State<PropertyDetail> {
                           propertyState.property.weeklyDiscount /
                           100;
                     }
-                    print("totalBasePrice: " + totalBasePrice.toString());
-                    print("hostFee: " +
-                        ((totalBasePrice - discount) * 0.9).toString());
-                    print("websiteFee: " +
-                        ((totalBasePrice - discount) * 0.05).toString());
-                    print("amount: " +
-                        ((totalBasePrice - discount) * 1.05).toString());
                     final booking = BookingDto(
                       children: guestBooking.children,
                       adult: guestBooking.adult,
@@ -406,10 +399,11 @@ class _PropertyDetailState extends State<PropertyDetail> {
                       }
                     }
                   } else {
+                    print("Hello login di");
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => Authentication()));
+                            builder: (context) => AuthenticationForBooking(propertyId:propertyState.property.id)));
                   }
                 },
                 style: TextButton.styleFrom(

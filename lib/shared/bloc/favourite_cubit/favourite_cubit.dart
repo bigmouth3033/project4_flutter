@@ -91,7 +91,8 @@ class FavouriteCubit extends Cubit<FavouriteState> {
     if (state is UserSuccess) {
       try {
         emit(FavouriteLoading());
-        userId = state.user.id!;
+        userId = state.user.id
+        !;
 
         // Gửi POST request
         var response =
@@ -107,7 +108,7 @@ class FavouriteCubit extends Cubit<FavouriteState> {
           // Nếu thành công => gọi lại danh sách mới
           await getFavourites();
           // Xóa yêu thích cục bộ
-          propertiesInWishlist.removeWhere((item) => item.id == propertyId);
+          // propertiesInWishlist.removeWhere((item) => item.id == propertyId);
           print("delete fav ok");
           emit(ChangeFavouriteSuccess());
         } else {

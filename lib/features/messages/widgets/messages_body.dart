@@ -55,7 +55,7 @@ class _MessagesBodyState extends State<MessagesBody> {
     try {
       stompClient = StompClient(
         config: StompConfig.sockJS(
-          url: 'http://192.168.1.16:8010/ws', // WebSocket endpoint
+          url: 'http://192.168.1.114:8010/ws', // WebSocket endpoint
           onConnect: (StompFrame frame) {
             print("Connected to WebSocket");
             isConnected = true;

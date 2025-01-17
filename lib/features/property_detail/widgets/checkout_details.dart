@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:project4_flutter/features/authentication/authentication.dart';
 import 'package:project4_flutter/features/property_detail/models/booking_dto.dart';
 import 'package:project4_flutter/features/property_detail/models/exception_date.dart';
 import 'package:project4_flutter/features/property_detail/models/property.dart';
+import 'package:project4_flutter/features/property_detail/widgets/authentication_for_booking.dart';
 import 'package:project4_flutter/features/property_detail/widgets/date_picker_modal.dart';
 import 'package:project4_flutter/features/property_detail/widgets/show_popup_transaction.dart';
 import 'package:project4_flutter/features/property_detail/widgets/transaction.dart';
@@ -13,7 +13,6 @@ import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 import 'package:project4_flutter/shared/models/user.dart';
 import 'package:project4_flutter/shared/utils/is_same_day.dart';
 import 'package:project4_flutter/shared/widgets/format_date.dart';
-
 import '../../../shared/bloc/booking/booking.dart';
 import '../../../shared/bloc/booking/date_booking.dart';
 import '../../../shared/bloc/booking/guest_booking.dart';
@@ -31,6 +30,12 @@ class CheckoutDetails extends StatefulWidget {
 class _CheckoutDetailsState extends State<CheckoutDetails> {
   Property getProperty() {
     return context.read<PropertyCubit>().property!;
+  }
+  late int propertyId;
+  @override
+  void initState() {
+    // TODO: implement initState
+     propertyId = widget.propertyId;
   }
 
   bool awaitBooking = false;
@@ -343,7 +348,7 @@ class _CheckoutDetailsState extends State<CheckoutDetails> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Authentication()));
+                                      builder: (context) => AuthenticationForBooking(propertyId:propertyId)));
                             }
                             ;
                           },
