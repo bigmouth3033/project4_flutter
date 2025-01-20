@@ -30,6 +30,7 @@ class RoomGroupCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
+            flex: 1,
             child: GridView.builder(
               shrinkWrap: true,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -50,7 +51,7 @@ class RoomGroupCard extends StatelessWidget {
                     image: chatUser[index].avatar != null
                         ? NetworkImage(chatUser[index].avatar!)
                         : null,
-                    size: 40,
+                    size: 35,
                     child: Text(
                       user.firstName![0],
                       style: const TextStyle(color: Colors.white),
@@ -69,12 +70,16 @@ class RoomGroupCard extends StatelessWidget {
               const SizedBox(
                 height: 10,
               ),
-              Text(
-                "${room.name}",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.black,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 100),
+                child: Text(
+                  overflow: TextOverflow.ellipsis,
+                  "${room.name}",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
                 ),
               ),
               if (room.lastMessage != null)

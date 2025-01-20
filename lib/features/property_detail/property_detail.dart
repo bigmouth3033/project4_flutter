@@ -34,6 +34,7 @@ import 'package:project4_flutter/shared/utils/calculate_host_time.dart';
 import 'package:project4_flutter/shared/utils/is_same_day.dart';
 
 import 'package:project4_flutter/shared/utils/limit_text_to300_words.dart';
+import 'package:project4_flutter/shared/widgets/bold_text.dart';
 import 'package:project4_flutter/shared/widgets/loading_icon.dart';
 import '../../main.dart';
 import '../../shared/models/category.dart';
@@ -51,11 +52,11 @@ class PropertyDetail extends StatefulWidget {
 class _PropertyDetailState extends State<PropertyDetail> {
   late Stream<DatabaseEvent> _dataStream;
   StreamSubscription<DatabaseEvent>? _subscription;
+  bool isFirst = true;
 
   @override
   void initState() {
     super.initState();
-    print(widget.propertyId);
 
     context.read<PropertyCubit>().getProperty(widget.propertyId);
     context.read<ReviewCubit>().getReviewOfProperty(widget.propertyId);
@@ -68,6 +69,16 @@ class _PropertyDetailState extends State<PropertyDetail> {
     _subscription = _dataStream.listen(
       (DatabaseEvent event) {
         if (event.snapshot.value != null) {
+          print("4444sss");
+          if (isFirst == true) {
+            print("sss");
+            setState(() {
+              isFirst = false;
+            });
+
+            return;
+          }
+
           final data = event.snapshot.value as Map<dynamic, dynamic>;
           final String message = data['message'];
 
@@ -176,6 +187,16 @@ class _PropertyDetailState extends State<PropertyDetail> {
                               buildPropertyImagesView(propertyState),
                               buildAddress(propertyState, addressCode, category,
                                   startArv),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 10),
+                                child: BoldText(
+                                    text: propertyState.property.bookingType ==
+                                            "instant"
+                                        ? "You can instantly reserve the property"
+                                        : "You can reserve the property",
+                                    fontSize: 18),
+                              ),
                               buildAmenity(propertyState),
                               buildTilteOffers(),
                               buildViewAmenity(propertyState),

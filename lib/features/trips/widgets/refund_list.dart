@@ -83,7 +83,7 @@ class RefundListStateWidget extends State<RefundList> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        return getRefundListCubit().getRefundList();
+        return getRefundListCubit().refresh();
       },
       child: BlocBuilder<RefundListCubit, RefundListState>(
         builder: (context, tripState) {
@@ -261,7 +261,7 @@ class RefundListStateWidget extends State<RefundList> {
                         },
                       ),
                     ),
-                    if (isLoading) const LoadingIcon(size: 40),
+                    // if (isLoading) const LoadingIcon(size: 40),
                   ],
                 )
               : !isLoading
@@ -300,7 +300,7 @@ class RefundListStateWidget extends State<RefundList> {
                                               0.5)), // Shadow color and opacity
                                 ),
                                 onPressed: () {
-                                  getRefundListCubit().getRefundList();
+                                  getRefundListCubit().refresh();
                                 },
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(

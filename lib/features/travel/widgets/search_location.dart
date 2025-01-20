@@ -21,10 +21,6 @@ class _SearchLocationState extends State<SearchLocation> {
   String? selectedLevel2;
   String? selectedLevel3;
 
-  String _getSelectedLocation() {
-    return "${selectedLevel1 ?? ''} - ${selectedLevel2 ?? ''} - ${selectedLevel3 ?? ''}";
-  }
-
   late CityCubit getCityCubit;
   List<String> cityNames = [];
 
@@ -83,22 +79,22 @@ class _SearchLocationState extends State<SearchLocation> {
             mainAxisSize: MainAxisSize.max,
             children: [
               // Title và Dropdown cho Level 1
-              Text(
+              const Text(
                 "Select City",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              DropdownButton<int?>(
+              DropdownButton<String?>(
                 value: getCityCubit.city,
-                hint: Text("Select city"),
+                hint: const Text("Select city"),
                 items: [
-                  DropdownMenuItem<int?>(
+                  const DropdownMenuItem<String?>(
                     // Cho phép bỏ chọn
                     value: null,
                     child: Text("--No Choice--"),
                   ),
                   ...level1List.map((level1) {
-                    return DropdownMenuItem<int?>(
-                      value: int.tryParse(level1['level1_id']),
+                    return DropdownMenuItem<String?>(
+                      value: level1['level1_id'],
                       child: Text(level1['name']),
                     );
                   }).toList(),
@@ -107,7 +103,12 @@ class _SearchLocationState extends State<SearchLocation> {
                   setState(() {
                     // Lấy danh sách Level 2
                     level2List = level1List.firstWhere(
-                          (level1) => level1['level1_id'] == value.toString(),
+                          (level1) {
+                            print(level1['level1_id'].toString());
+                            print(value.toString());
+                            return level1['level1_id'].toString() ==
+                                value.toString();
+                          },
                           orElse: () => {},
                         )['level2s'] ??
                         [];
@@ -130,18 +131,18 @@ class _SearchLocationState extends State<SearchLocation> {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    DropdownButton<int?>(
+                    DropdownButton<String?>(
                       value: getCityCubit.district,
                       hint: const Text("Select District"),
                       items: [
-                        const DropdownMenuItem<int?>(
+                        const DropdownMenuItem<String?>(
                           // Cho phép bỏ chọn
                           value: null,
                           child: Text("--No Choice--"),
                         ),
                         ...level2List.map((level2) {
-                          return DropdownMenuItem<int?>(
-                            value: int.tryParse(level2['level2_id']),
+                          return DropdownMenuItem<String?>(
+                            value: level2['level2_id'],
                             child: Text(level2['name']),
                           );
                         }).toList(),
@@ -178,18 +179,18 @@ class _SearchLocationState extends State<SearchLocation> {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    DropdownButton<int?>(
+                    DropdownButton<String?>(
                       value: getCityCubit.ward,
                       hint: const Text("Select Ward"),
                       items: [
-                        const DropdownMenuItem<int?>(
+                        const DropdownMenuItem<String?>(
                           // Cho phép bỏ chọn
                           value: null,
                           child: Text("--No Choice--"),
                         ),
                         ...level3List.map((level3) {
-                          return DropdownMenuItem<int?>(
-                            value: int.tryParse(level3['level3_id']),
+                          return DropdownMenuItem<String?>(
+                            value: level3['level3_id'],
                             child: Text(level3['name']),
                           );
                         }).toList(),

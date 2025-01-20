@@ -14,21 +14,21 @@ class CityCubit extends Cubit<CityState> {
   List<ManagedCityEntity> managedCityList = [];
   List<String> managedCityNames = [];
   var apiService = ApiService();
-  int? city;
-  int? district;
-  int? ward;
+  String? city;
+  String? district;
+  String? ward;
 
-  void changeCity(int? ct) {
+  void changeCity(String? ct) {
     city = ct;
     emit(CityChangeSuccess());
   }
 
-  void changeDistrict(int? dis) {
+  void changeDistrict(String? dis) {
     district = dis;
     emit(DistrictChangeSuccess());
   }
 
-  void changeWard(int? wa) {
+  void changeWard(String? wa) {
     ward = wa;
     emit(WardChangeSuccess());
   }

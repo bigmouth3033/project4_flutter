@@ -20,7 +20,7 @@ class TripCubit extends Cubit<TripState> {
   bool hasMore = true;
   bool isLoading = false;
   TripCount? tripCount;
-  bool groupDate = true;
+  bool groupDate = false;
   final List<BookingMinimizeDto> bookingList = [];
   TripCubit() : super(TripNotAvailable());
 
@@ -47,6 +47,15 @@ class TripCubit extends Cubit<TripState> {
     await getBookingList();
   }
 
+  Future updateGroupDate() async {
+    groupDate = !groupDate;
+    currentPage = 0;
+    hasMore = true;
+    bookingList.clear();
+    await getBookingList();
+    await getBookingCount();
+  }
+
   Future getBookingCount() async {
     try {
       Map<String, dynamic> params = {
@@ -67,6 +76,33 @@ class TripCubit extends Cubit<TripState> {
     } catch (ex) {
       print(ex.toString());
     }
+  }
+
+  Future<bool> refund(Map<String, String> body) async {
+    try {
+      var response =
+          await apiService.post("bookingCM/updateRefundForBooking", body: body);
+      var customResult = CustomResult.fromJson(response);
+
+      if (customResult.status == 200) {
+        bookingList.clear();
+        await getBookingList();
+        await getBookingCount();
+        return true;
+      }
+
+      return false;
+    } catch (ex) {
+      return false;
+    }
+  }
+
+  Future refresh() async {
+    currentPage = 0;
+    hasMore = true;
+    bookingList.clear();
+    await getBookingCount();
+    await getBookingList();
   }
 
   Future getBookingList() async {

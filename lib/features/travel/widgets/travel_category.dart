@@ -38,7 +38,7 @@ class TravelCategoryState extends State<TravelCategory> {
   Widget build(BuildContext context) {
     return BlocBuilder<CategoryCubit, int?>(
       builder: (context, state) {
-        if (state == null) {
+        if (state == -1) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -53,7 +53,11 @@ class TravelCategoryState extends State<TravelCategory> {
                 var category = _categories![index];
                 return GestureDetector(
                   onTap: () {
-                    getCategoryCubit.changeCategory(category.id);
+                    if (getCategoryCubit.categoryId == category.id) {
+                      getCategoryCubit.changeCategory(null);
+                    } else {
+                      getCategoryCubit.changeCategory(category.id);
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),

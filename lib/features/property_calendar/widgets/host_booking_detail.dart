@@ -142,7 +142,7 @@ class HostBookingDetail extends StatelessWidget {
                             )
                           ],
                           child: MessagesBody(
-                            userId: booking.host.id,
+                            userId: booking.customer.id,
                           ),
                         );
                       },

@@ -15,6 +15,7 @@ class SearchPopup extends StatefulWidget {
 
 class _SearchPopupState extends State<SearchPopup> {
   final searchTextController = TextEditingController();
+
   bool isGuestExpanded = false;
   bool isDateExpanded = false;
   bool isLocationExpanded = false;
@@ -31,6 +32,9 @@ class _SearchPopupState extends State<SearchPopup> {
 
   @override
   Widget build(BuildContext context) {
+    searchTextController.text = getFilterCubit.searchName == null
+        ? ''
+        : getFilterCubit.searchName.toString();
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(16),
@@ -63,6 +67,7 @@ class _SearchPopupState extends State<SearchPopup> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
+
                   TextField(
                     controller: searchTextController,
                     onSubmitted: (value) {

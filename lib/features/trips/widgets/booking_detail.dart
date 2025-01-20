@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:project4_flutter/features/messages/widgets/messages_body.dart';
 import 'package:project4_flutter/features/property_detail/property_detail.dart';
 import 'package:project4_flutter/features/trips/models/booking_minimize_dto.dart';
+import 'package:project4_flutter/shared/bloc/trip_cubit/trip_cubit.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:latlong2/latlong.dart';
@@ -18,10 +19,24 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../messages/bloc/message_cubit/add_friend_cubit.dart';
 import '../../messages/bloc/message_cubit/search_friend_cubit.dart';
 
-class BookingDetail extends StatelessWidget {
+class BookingDetail extends StatefulWidget {
   const BookingDetail(this.booking, {super.key});
 
   final BookingMinimizeDto booking;
+
+  @override
+  State<BookingDetail> createState() => _BookingDetailState();
+}
+
+class _BookingDetailState extends State<BookingDetail> {
+  late String status;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    status = widget.booking.status;
+  }
 
   bool checkIfModerateRefundable(String type, DateTime checkIn) {
     if (type == "Moderate") {
@@ -108,7 +123,7 @@ class BookingDetail extends StatelessWidget {
                   enlargeFactor: 0.3,
                   scrollDirection: Axis.horizontal,
                 ),
-                items: booking.property.propertyImages.map((i) {
+                items: widget.booking.property.propertyImages.map((i) {
                   return Builder(
                     builder: (BuildContext context) {
                       return Container(
@@ -140,14 +155,14 @@ class BookingDetail extends StatelessWidget {
                           providers: [
                             BlocProvider(
                               create: (_) => SearchFriendCubit(
-                                  booking.customer.id.toString()),
+                                  widget.booking.customer.id.toString()),
                             ),
                             BlocProvider(
                               create: (_) => AddFriendCubit(),
                             )
                           ],
                           child: MessagesBody(
-                            userId: booking.host.id,
+                            userId: widget.booking.host.id,
                           ),
                         );
                       },
@@ -184,7 +199,7 @@ class BookingDetail extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              booking.property.user.firstName,
+                              widget.booking.property.user.firstName,
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black.withOpacity(0.4)),
@@ -204,7 +219,7 @@ class BookingDetail extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PropertyDetail(booking.property.id),
+                            PropertyDetail(widget.booking.property.id),
                       ),
                     );
                   },
@@ -239,7 +254,7 @@ class BookingDetail extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              booking.property.propertyTitle,
+                              widget.booking.property.propertyTitle,
                               style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.black.withOpacity(0.4)),
@@ -256,8 +271,8 @@ class BookingDetail extends StatelessWidget {
                 child: FlutterMap(
                   options: MapOptions(
                     initialCenter: LatLng(
-                        double.parse(booking.property.coordinatesX),
-                        double.parse(booking.property
+                        double.parse(widget.booking.property.coordinatesX),
+                        double.parse(widget.booking.property
                             .coordinatesY)), // Center the map over London
                     initialZoom: 15,
                   ),
@@ -285,15 +300,17 @@ class BookingDetail extends StatelessWidget {
                             image: AssetImage('assets/images/marker.png')),
                       ),
                       position: LocationMarkerPosition(
-                        latitude: double.parse(booking.property.coordinatesX),
-                        longitude: double.parse(booking.property.coordinatesY),
+                        latitude:
+                            double.parse(widget.booking.property.coordinatesX),
+                        longitude:
+                            double.parse(widget.booking.property.coordinatesY),
                         accuracy: 1,
                       ),
                     )
                   ],
                 ),
               ),
-              if (booking.status == "PENDING ")
+              if (widget.booking.status == "PENDING ")
                 Padding(
                   padding:
                       const EdgeInsets.only(bottom: 12, left: 20, right: 20),
@@ -378,7 +395,7 @@ class BookingDetail extends StatelessWidget {
                                   height: 10,
                                 ),
                                 Text(
-                                    "${booking.adult} adults${booking.children != 0 ? ", ${booking.children}  children." : "."}")
+                                    "${widget.booking.adult} adults${widget.booking.children != 0 ? ", ${widget.booking.children}  children." : "."}")
                               ],
                             ),
                           ],
@@ -420,7 +437,7 @@ class BookingDetail extends StatelessWidget {
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 220),
                             child: Text(
-                              booking.bookingCode,
+                              widget.booking.bookingCode,
                               softWrap: true,
                             ),
                           ),
@@ -440,7 +457,7 @@ class BookingDetail extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     QrImageView(
-                                      data: booking.bookingCode,
+                                      data: widget.booking.bookingCode,
                                       version: QrVersions.auto,
                                       size: 200.0,
                                     ),
@@ -460,7 +477,7 @@ class BookingDetail extends StatelessWidget {
                   ),
                 ),
               ),
-              if (booking.status == "ACCEPT")
+              if (status == "ACCEPT")
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
@@ -488,24 +505,26 @@ class BookingDetail extends StatelessWidget {
                                     MediaQuery.of(context).size.width * 0.8,
                               ),
                               child: Text(
-                                booking.refundPolicy.policyName == "Flexible"
-                                    ? returnFlexibleRefund(booking.checkInDay)
-                                    : booking.refundPolicy.policyName ==
+                                widget.booking.refundPolicy.policyName ==
+                                        "Flexible"
+                                    ? returnFlexibleRefund(
+                                        widget.booking.checkInDay)
+                                    : widget.booking.refundPolicy.policyName ==
                                             "Moderate"
                                         ? returnModerateRefund(
-                                            booking.checkInDay)
+                                            widget.booking.checkInDay)
                                         : "Non refundable",
                                 softWrap: true,
                               ),
                             ),
-                            if ((booking.refundPolicy.policyName ==
+                            if ((widget.booking.refundPolicy.policyName ==
                                         "Flexible" &&
-                                    checkIfFlexibleRefundable(
-                                        "Flexible", booking.checkInDay)) ||
-                                (booking.refundPolicy.policyName ==
+                                    checkIfFlexibleRefundable("Flexible",
+                                        widget.booking.checkInDay)) ||
+                                (widget.booking.refundPolicy.policyName ==
                                         "Moderate" &&
                                     checkIfModerateRefundable(
-                                        "Moderate", booking.checkInDay)))
+                                        "Moderate", widget.booking.checkInDay)))
                               ElevatedButton(
                                 style: ButtonStyle(
                                   backgroundColor:
@@ -517,7 +536,19 @@ class BookingDetail extends StatelessWidget {
                                           alpha:
                                               0.5)), // Shadow color and opacity
                                 ),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  var result = await context
+                                      .read<TripCubit>()
+                                      .refund({
+                                    "bookingId": widget.booking.id.toString()
+                                  });
+
+                                  if (result == true) {
+                                    setState(() {
+                                      status = "REFUND";
+                                    });
+                                  }
+                                },
                                 child: const Padding(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 24.0, vertical: 12.0),
@@ -584,22 +615,22 @@ class BookingDetail extends StatelessWidget {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                if (booking.selfCheckIn)
+                                if (widget.booking.selfCheckIn)
                                   Text(
-                                    'Self check in${booking.selfCheckInType != null ? " with ${booking.selfCheckInType}" : "."}',
+                                    'Self check in${widget.booking.selfCheckInType != null ? " with ${widget.booking.selfCheckInType}" : "."}',
                                   ),
                                 Text(
-                                  booking.property.smokingAllowed
+                                  widget.booking.property.smokingAllowed
                                       ? 'No smoking.'
                                       : 'Smoking allowed.',
                                 ),
                                 Text(
-                                  booking.property.petAllowed
+                                  widget.booking.property.petAllowed
                                       ? 'No pet.'
                                       : 'Pet allowed.',
                                 ),
                                 Text(
-                                  'Maximum guest is ${booking.property.maximumGuest}.',
+                                  'Maximum guest is ${widget.booking.property.maximumGuest}.',
                                 ),
                               ],
                             ),
@@ -610,9 +641,9 @@ class BookingDetail extends StatelessWidget {
                   ],
                 ),
               ),
-              if (booking.status == "ACCEPT" &&
-                  booking.selfCheckInInstruction != null &&
-                  showCheckInInstruction(booking.checkInDay))
+              if (widget.booking.status == "ACCEPT" &&
+                  widget.booking.selfCheckInInstruction != null &&
+                  showCheckInInstruction(widget.booking.checkInDay))
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
@@ -652,7 +683,8 @@ class BookingDetail extends StatelessWidget {
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
                                     child: Html(
-                                      data: booking.selfCheckInInstruction,
+                                      data:
+                                          widget.booking.selfCheckInInstruction,
                                     ),
                                   ),
                                 );
@@ -678,7 +710,7 @@ class BookingDetail extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PropertyDetail(booking.property.id),
+                            PropertyDetail(widget.booking.property.id),
                       ),
                     );
                   },
@@ -760,7 +792,7 @@ class BookingDetail extends StatelessWidget {
                                   width: 10,
                                 ),
                                 Text(
-                                  "Hosted by ${booking.property.user.firstName}",
+                                  "Hosted by ${widget.booking.property.user.firstName}",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -776,13 +808,13 @@ class BookingDetail extends StatelessWidget {
                               border: Border.all(color: Colors.red, width: 2),
                               borderRadius: BorderRadius.circular(50)),
                           statusAlignment: Alignment.topRight,
-                          image: booking.property.user.avatar != null
-                              ? NetworkImage(booking.property.user
+                          image: widget.booking.property.user.avatar != null
+                              ? NetworkImage(widget.booking.property.user
                                   .avatar!) // Assuming cardAvatar is a URL
                               : null,
                           size: 40,
                           child: Text(
-                            booking.property.user.firstName,
+                            widget.booking.property.user.firstName,
                             style: const TextStyle(color: Colors.white),
                           ),
                         )
@@ -852,7 +884,7 @@ class BookingDetail extends StatelessWidget {
                           providers: [
                             BlocProvider(
                               create: (_) => SearchFriendCubit(
-                                  booking.customer.id.toString()),
+                                  widget.booking.customer.id.toString()),
                             ),
                             BlocProvider(
                               create: (_) => AddFriendCubit(),
@@ -953,13 +985,13 @@ class BookingDetail extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    DateFormat("EEEE d, MMM").format(booking.checkInDay),
+                    DateFormat("EEEE d, MMM").format(widget.booking.checkInDay),
                     style: const TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 15,
                     ),
                   ),
-                  Text(DateFormat("h:mm a").format(booking.checkInDay)),
+                  Text(DateFormat("h:mm a").format(widget.booking.checkInDay)),
                 ],
               ),
             ),
@@ -974,13 +1006,13 @@ class BookingDetail extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  DateFormat("EEEE d, MMM").format(booking.checkOutDay),
+                  DateFormat("EEEE d, MMM").format(widget.booking.checkOutDay),
                   style: const TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 15,
                   ),
                 ),
-                Text(DateFormat("h:mm a").format(booking.checkOutDay)),
+                Text(DateFormat("h:mm a").format(widget.booking.checkOutDay)),
               ],
             )
           ],

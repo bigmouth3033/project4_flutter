@@ -68,6 +68,14 @@ class ReservationCubit extends Cubit<ReservationState> {
     }
   }
 
+  Future refresh() async {
+    currentPage = 0;
+    hasMore = true;
+    bookingList.clear();
+    await getBookingCount();
+    await getBookingList();
+  }
+
   Future getBookingList() async {
     if (!hasMore) {
       emit(ReservationFinishLoaded());

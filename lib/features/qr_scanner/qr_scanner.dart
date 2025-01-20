@@ -9,6 +9,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:project4_flutter/features/qr_scanner/bloc/qr_scanner_cubit.dart';
 import 'package:project4_flutter/features/qr_scanner/widgets/qr_code_check.dart';
 import 'package:project4_flutter/shared/utils/token_storage.dart';
+import 'package:project4_flutter/shared/widgets/normal_text.dart';
 
 import '../../main.dart';
 
@@ -20,26 +21,56 @@ class QrScanner extends StatefulWidget {
 }
 
 class _QrScannerState extends State<QrScanner> {
-  TokenStorage tokenStorage = TokenStorage();
+  late final MobileScannerController _controller;
 
   @override
-  Widget build(BuildContext context) {
-    return MobileScanner(
-      controller:
-          MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates),
-      onDetect: (capture) {
-        final List<Barcode> barcodes = capture.barcodes;
-        final Uint8List? image = capture.image;
-        if (barcodes.first.rawValue != null) {
+  void initState() {
+    super.initState();
+    _controller =
+        MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  TokenStorage tokenStorage = TokenStorage();
+
+  void readData(String barcode) {
+    databaseRef.child(barcode).once().then((DatabaseEvent event) {
+      final data = event.snapshot.value as Map<dynamic, dynamic>;
+
+      if (data.isNotEmpty) {
+        if (mounted) {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => BlocProvider(
                 create: (_) => QrScannerCubit(),
-                child: QrCodeCheck(barcodes.first.rawValue!),
+                child: QrCodeCheck(barcode),
               ),
             ),
-          );
+          ).then((_) {
+            if (mounted) {
+              Navigator.pop(context);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MobileScanner(
+      controller: _controller,
+      onDetect: (capture) {
+        final List<Barcode> barcodes = capture.barcodes;
+        final Uint8List? image = capture.image;
+        if (barcodes.first.rawValue != null) {
+          readData(barcodes.first.rawValue!);
         }
       },
     );

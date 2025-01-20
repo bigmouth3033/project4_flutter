@@ -85,8 +85,7 @@ class ReservationListState extends State<ReservationList> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
-        return getReservationCubit()
-            .updateStatus(getReservationCubit().currentStatus);
+        return getReservationCubit().refresh();
       },
       child: BlocBuilder<ReservationCubit, ReservationState>(
         builder: (context, tripState) {
@@ -307,8 +306,7 @@ class ReservationListState extends State<ReservationList> {
                                             0.5)), // Shadow color and opacity
                               ),
                               onPressed: () {
-                                getReservationCubit().updateStatus(
-                                    getReservationCubit().currentStatus);
+                                getReservationCubit().refresh();
                               },
                               child: const Padding(
                                 padding: EdgeInsets.symmetric(

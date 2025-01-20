@@ -56,7 +56,7 @@ class _MessagesBodyState extends State<MessagesBody> {
     try {
       stompClient = StompClient(
         config: StompConfig.sockJS(
-          url: 'http://${dotenv.env['API_URL']}}:8010/ws', // WebSocket endpoint
+          url: 'http://${dotenv.env['API_URL']}:8010/ws', // WebSocket endpoint
           onConnect: (StompFrame frame) {
             print("Connected to WebSocket");
             isConnected = true;
@@ -285,9 +285,9 @@ class _MessagesBodyState extends State<MessagesBody> {
                           }
                         });
                       },
-                      splashColor:
-                          Colors.blue.withOpacity(0.3), // Ripple effect color
-                      highlightColor: Colors.blue.withOpacity(0.1),
+                      splashColor: Colors.blue
+                          .withValues(alpha: 0.3), // Ripple effect color
+                      highlightColor: Colors.blue.withValues(alpha: 0.1),
                       child: RoomCard(room, user));
                 } else {
                   return InkWell(

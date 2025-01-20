@@ -36,10 +36,11 @@ class _QrCodeCheckState extends State<QrCodeCheck> {
       }).then((_) {
         print('Data added successfully!');
         if (mounted) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const AuthorizeProfile()),
-            (route) => false, // Removes all previous routes
-          );
+          // Navigator.of(context).pushAndRemoveUntil(
+          //   MaterialPageRoute(builder: (context) => const AuthorizeProfile()),
+          //   (route) => false, // Removes all previous routes
+          // );
+          Navigator.pop(context);
         }
       }).catchError((error) {
         print('Failed to add data: $error');
@@ -83,9 +84,13 @@ class _QrCodeCheckState extends State<QrCodeCheck> {
                             user.avatar!) // Assuming cardAvatar is a URL
                         : null,
                     size: 120,
-                    child: Text(
-                      user.firstName[0],
-                      style: const TextStyle(color: Colors.white),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 120),
+                      child: Text(
+                        overflow: TextOverflow.fade,
+                        user.firstName[0],
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),

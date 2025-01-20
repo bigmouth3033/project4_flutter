@@ -33,9 +33,9 @@ class TravelCubit extends Cubit<TravelState> {
   int bathRoom = 1;
   int totalCount = 0;
   int guest = 1;
-  int? city;
-  int? district;
-  int? ward;
+  String? city;
+  String? district;
+  String? ward;
   String? searchName;
 
   TravelCubit() : super(TravelNotAvailable());
@@ -66,7 +66,7 @@ class TravelCubit extends Cubit<TravelState> {
   }
 
   //fetch data => Future//fetch data => Future
-  Future changeCity(int? ct) async {
+  Future changeCity(String? ct) async {
     city = ct;
     currentPage = 0;
     hasMore = true;
@@ -74,7 +74,7 @@ class TravelCubit extends Cubit<TravelState> {
     await getPropertyList();
   } //fetch data => Future
 
-  Future changeDistrict(int? dis) async {
+  Future changeDistrict(String? dis) async {
     district = dis;
     currentPage = 0;
     hasMore = true;
@@ -82,7 +82,7 @@ class TravelCubit extends Cubit<TravelState> {
     await getPropertyList();
   } //fetch data => Future
 
-  Future changeWard(int? wa) async {
+  Future changeWard(String? wa) async {
     ward = wa;
     currentPage = 0;
     hasMore = true;
@@ -233,6 +233,7 @@ class TravelCubit extends Cubit<TravelState> {
         'startDate': startDateFormat,
         'endDate': endDateFormat,
       };
+
       var response =
           await apiService.get("listingCM/propertyCMflutter", params: params);
       var customPaging = CustomPaging.fromJson(response);

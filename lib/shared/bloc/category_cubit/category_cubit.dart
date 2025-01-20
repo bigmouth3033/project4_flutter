@@ -11,11 +11,11 @@ class CategoryCubit extends Cubit<int?> {
   }
 
   bool isLoading = false;
-  int? categoryId;
+  int? categoryId = -1;
   List<Category> categoryList = [];
   var apiService = ApiService();
 
-  void changeCategory(int category) async {
+  void changeCategory(int? category) {
     categoryId = category;
     emit(categoryId); //emit to change state => re-render base on BlocListener
   }

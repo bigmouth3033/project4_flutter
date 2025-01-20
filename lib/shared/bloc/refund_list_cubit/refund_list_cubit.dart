@@ -31,6 +31,13 @@ class RefundListCubit extends Cubit<RefundListState> {
     emit(RefundListNotAvailable());
   }
 
+  Future refresh() async {
+    hasMore = true;
+    refundList.clear();
+    currentPage = 0;
+    await getRefundList();
+  }
+
   Future getRefundList() async {
     if (!hasMore) {
       emit(RefundListFinishLoaded());

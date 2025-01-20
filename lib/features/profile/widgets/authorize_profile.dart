@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_avatar/flutter_advanced_avatar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:project4_flutter/features/booking_qr_scan/booking_qr_scan.dart';
 import 'package:project4_flutter/features/listing_list/listing_list.dart';
 import 'package:project4_flutter/features/login_and_security/login_and_security.dart';
 import 'package:project4_flutter/features/login_security/login_security.dart';
 import 'package:project4_flutter/features/personal_information/personal_information.dart';
+import 'package:project4_flutter/features/qr_scanner/bloc/qr_scanner_cubit.dart';
+import 'package:project4_flutter/features/trips/trip.dart';
 import 'package:project4_flutter/main.dart';
+import 'package:project4_flutter/shared/bloc/booking_qr_cubit/booking_qr_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_cubit.dart';
 import 'package:project4_flutter/shared/bloc/user_cubit/user_state.dart';
 import 'package:project4_flutter/shared/models/user.dart';
@@ -402,7 +406,13 @@ class AuthorizeProfile extends StatelessWidget {
                   .zero, // No rounded corners, sharp rectangle edges
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Trip(),
+                ));
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -520,7 +530,15 @@ class AuthorizeProfile extends StatelessWidget {
                   .zero, // No rounded corners, sharp rectangle edges
             ),
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                return BlocProvider(
+                    create: (_) => BookingQrCubit(),
+                    child: const BookingQrScan());
+              },
+            ));
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
@@ -534,15 +552,15 @@ class AuthorizeProfile extends StatelessWidget {
               child: const Row(
                 children: [
                   HugeIcon(
-                    icon: HugeIcons.strokeRoundedBookOpen02,
+                    icon: HugeIcons.strokeRoundedQrCode,
                     color: Colors.black,
-                    size: 26.0,
+                    size: 24.0,
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   Text(
-                    "Term of Service",
+                    "Scan booking by Qr code",
                     style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
                   Spacer(),
@@ -559,53 +577,53 @@ class AuthorizeProfile extends StatelessWidget {
         const SizedBox(
           height: 10,
         ),
-        TextButton(
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius
-                  .zero, // No rounded corners, sharp rectangle edges
-            ),
-          ),
-          onPressed: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              padding: const EdgeInsetsDirectional.symmetric(vertical: 10),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom:
-                      BorderSide(color: Color.fromARGB(30, 0, 0, 0), width: 1),
-                ),
-              ),
-              child: const Row(
-                children: [
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedBookOpen02,
-                    color: Colors.black,
-                    size: 26.0,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Open source licenses",
-                    style: TextStyle(fontSize: 16, color: Colors.black),
-                  ),
-                  Spacer(),
-                  HugeIcon(
-                    icon: HugeIcons.strokeRoundedArrowRight01,
-                    color: Colors.black,
-                    size: 24.0,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
+        // TextButton(
+        //   style: TextButton.styleFrom(
+        //     padding: EdgeInsets.zero,
+        //     shape: const RoundedRectangleBorder(
+        //       borderRadius: BorderRadius
+        //           .zero, // No rounded corners, sharp rectangle edges
+        //     ),
+        //   ),
+        //   onPressed: () {},
+        //   child: Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 20),
+        //     child: Container(
+        //       padding: const EdgeInsetsDirectional.symmetric(vertical: 10),
+        //       decoration: const BoxDecoration(
+        //         border: Border(
+        //           bottom:
+        //               BorderSide(color: Color.fromARGB(30, 0, 0, 0), width: 1),
+        //         ),
+        //       ),
+        //       child: const Row(
+        //         children: [
+        //           HugeIcon(
+        //             icon: HugeIcons.strokeRoundedBookOpen02,
+        //             color: Colors.black,
+        //             size: 26.0,
+        //           ),
+        //           SizedBox(
+        //             width: 10,
+        //           ),
+        //           Text(
+        //             "Open source licenses",
+        //             style: TextStyle(fontSize: 16, color: Colors.black),
+        //           ),
+        //           Spacer(),
+        //           HugeIcon(
+        //             icon: HugeIcons.strokeRoundedArrowRight01,
+        //             color: Colors.black,
+        //             size: 24.0,
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(
+        //   height: 20,
+        // ),
       ],
     );
   }
