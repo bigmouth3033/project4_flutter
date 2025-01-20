@@ -508,7 +508,8 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              Row(
+                            //sua code review
+                              startArv! > 0 ? Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   const Icon(Icons.star, size: 20),
@@ -519,7 +520,7 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                     ),
                                   ),
                                 ],
-                              ),
+                              ): const Text(""),
                             ],
                           ),
                     ElevatedButton(

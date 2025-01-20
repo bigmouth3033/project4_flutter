@@ -5,7 +5,6 @@ import 'package:project4_flutter/features/property_detail/models/booking.dart';
 import 'package:project4_flutter/features/property_detail/models/transaction.dart';
 import 'package:project4_flutter/features/property_detail/widgets/credit_card_ui.dart';
 import 'package:project4_flutter/features/property_detail/widgets/show_popup_transaction.dart';
-import 'package:project4_flutter/features/travel/travel.dart';
 import 'package:project4_flutter/home_screen.dart';
 import 'package:project4_flutter/shared/bloc/booking/date_booking.dart';
 import 'package:project4_flutter/shared/bloc/booking/transaction.dart';
@@ -34,13 +33,13 @@ class _TransactionState extends State<TransactionModal> {
   void initState() {
     super.initState();
     booking = widget.booking;
-
   }
 
   bool _validateFields() {
     final now = DateTime.now();
     final currentYear = now.year;
     final currentMonth = now.month;
+    final pattern = RegExp(r'^[a-zA-Z\s]*$'); // Updated pattern
     if (cardNumberController.text.length != 16 ||
         int.tryParse(cardNumberController.text) == null) {
       errorMessage = 'Invalid card number';
@@ -50,6 +49,11 @@ class _TransactionState extends State<TransactionModal> {
       errorMessage = "Name must not be empty";
       return false;
     }
+    // if (!pattern.hasMatch(cardHolderNameController.text)) { // Validate name
+    //   errorMessage = "Name must contain only letters and spaces";
+    //   return false;
+    // }
+
     final expYear = int.tryParse(expirationYearController.text) ?? 0;
     final expMonth = int.tryParse(expirationMonthController.text) ?? 0;
 
@@ -91,7 +95,7 @@ class _TransactionState extends State<TransactionModal> {
         context.read<DateBookingCubit>().updateDates(null, null);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
-              (route) => false,
+          (route) => false,
         );
         return true;
       },
@@ -102,20 +106,20 @@ class _TransactionState extends State<TransactionModal> {
         backgroundColor: Colors.black,
         body: BlocBuilder<TransactionCubit, TransactionState>(
           builder: (context, state) {
-
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(26),
                 child: Column(
                   children: [
                     CreditCardUI(
-                      cardHolderName: cardHolderNameController.text,
+                      cardHolderName:
+                          cardHolderNameController.text.toUpperCase(),
                       cardNumber: cardNumberController.text,
                       cvcNumber: cvcController.text,
                       expirationMonth: expirationMonthController.text,
                       expirationYear: expirationYearController.text != ""
                           ? (int.parse(expirationYearController.text) % 100)
-                          .toString()
+                              .toString()
                           : "",
                     ),
                     if (!isValidate)
@@ -167,7 +171,10 @@ class _TransactionState extends State<TransactionModal> {
                             ),
                           ),
                           inputFormatters: [
-                            LengthLimitingTextInputFormatter(20),
+                            FilteringTextInputFormatter.allow(RegExp(
+                                r'[a-zA-Z\s]')), // Allow only letters and spaces
+                            LengthLimitingTextInputFormatter(
+                                20), // Optional: Limit the length of the name
                           ],
                           style: const TextStyle(
                             color: Colors.white,
@@ -180,12 +187,12 @@ class _TransactionState extends State<TransactionModal> {
                           controller: expirationMonthController,
                           decoration: const InputDecoration(
                             icon:
-                            Icon(Icons.calendar_today, color: Colors.white),
+                                Icon(Icons.calendar_today, color: Colors.white),
                             labelText: 'Expiration Month',
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                               color: Colors.white70,
                             ),
-                            focusedBorder: const UnderlineInputBorder(
+                            focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
@@ -193,8 +200,10 @@ class _TransactionState extends State<TransactionModal> {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(2),
-                            TextInputFormatter.withFunction((oldValue, newValue) {
-                              if (newValue.text.isNotEmpty && int.tryParse(newValue.text) != null) {
+                            TextInputFormatter.withFunction(
+                                (oldValue, newValue) {
+                              if (newValue.text.isNotEmpty &&
+                                  int.tryParse(newValue.text) != null) {
                                 int value = int.parse(newValue.text);
                                 if (value > 12) {
                                   return oldValue;
@@ -215,9 +224,9 @@ class _TransactionState extends State<TransactionModal> {
                           controller: expirationYearController,
                           decoration: const InputDecoration(
                             icon:
-                            Icon(Icons.calendar_today, color: Colors.white),
+                                Icon(Icons.calendar_today, color: Colors.white),
                             labelText: 'Expiration Year',
-                            labelStyle: const TextStyle(
+                            labelStyle:  TextStyle(
                               color: Colors.white70,
                             ),
                             focusedBorder: const UnderlineInputBorder(
@@ -237,23 +246,23 @@ class _TransactionState extends State<TransactionModal> {
                         ),
                         TextFormField(
                           controller: cvcController,
-                          decoration: InputDecoration(
-                            icon: const Icon(Icons.lock, color: Colors.white),
+                          decoration: const InputDecoration(
+                            icon: Icon(Icons.lock, color: Colors.white),
                             labelText: 'CVC',
-                            labelStyle: const TextStyle(
+                            labelStyle: TextStyle(
                               color: Colors.white70,
                             ),
-                            focusedBorder: const UnderlineInputBorder(
+                            focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
                             ),
                           ),
-
                           style: const TextStyle(
                             color: Colors.white,
                           ),
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(4),
+                            LengthLimitingTextInputFormatter(3),
+
                           ],
                           onChanged: (value) {
                             setState(() {});
@@ -276,12 +285,12 @@ class _TransactionState extends State<TransactionModal> {
                           foregroundColor: Colors.white, // Màu chữ (red)
                           textStyle: const TextStyle(
                             fontWeight:
-                            FontWeight.bold, // Tùy chọn: làm đậm chữ
+                                FontWeight.bold, // Tùy chọn: làm đậm chữ
                           ),
                         ),
                         child: awaitTransaction
                             ? const CircularProgressIndicator(
-                            color: Colors.white)
+                                color: Colors.white)
                             : const Text('Submit'),
                       ),
                     ),
@@ -326,5 +335,28 @@ class _TransactionState extends State<TransactionModal> {
     } else {
       showErrorDialogTransaction(context, message, "Error");
     }
+  }
+}
+
+class YearInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final int currentYear = DateTime.now().year;
+
+
+    final text = newValue.text;
+    if (text.isEmpty) return newValue;
+
+
+    final int? year = int.tryParse(text);
+    if (year == null) return oldValue;
+
+
+    if (year < currentYear || year > 2100) {
+      return oldValue;
+    }
+
+    return newValue;
   }
 }

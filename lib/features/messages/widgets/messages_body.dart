@@ -56,7 +56,7 @@ class _MessagesBodyState extends State<MessagesBody> {
     try {
       stompClient = StompClient(
         config: StompConfig.sockJS(
-          url: 'http://${dotenv.env['API_URL']}}:8010/ws', // WebSocket endpoint
+          url: 'http://${dotenv.env['API_URL']}:8010/ws', // WebSocket endpoint
           onConnect: (StompFrame frame) {
             print("Connected to WebSocket");
             isConnected = true;

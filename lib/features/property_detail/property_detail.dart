@@ -106,15 +106,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
 
   @override
   Widget build(BuildContext context) {
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //   (_) {
-    //     context.read<PropertyCubit>().getProperty(widget.propertyId);
-    //     context.read<ReviewCubit>().getReviewOfProperty(widget.propertyId);
-    //     context.read<PolicyCubit>().getPolicy();
-    //     context.read<DateBookingCubit>();
-    //   },
-    // );
-    // sua code
+
     return WillPopScope(
       onWillPop: () async {
         context.read<DateBookingCubit>().updateDates(null, null);
@@ -263,7 +255,8 @@ class _PropertyDetailState extends State<PropertyDetail> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      Row(
+                  // sua code review
+                      startArv > 0 ? Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const Icon(Icons.star, size: 20),
@@ -274,7 +267,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                             ),
                           ),
                         ],
-                      ),
+                      ): const Text(""),
                     ],
                   ),
             if (startDate != null && endDate != null)
@@ -829,6 +822,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
   }
 
   Padding buildMeetHost(PropertySuccess propertyState, double startArv) {
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Container(
@@ -899,100 +893,101 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 ],
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BlocBuilder<ReviewCubit, ReviewState>(
-                      builder: (context, state) {
-                        if (state is ReviewLoading) {
-                          return const CircularProgressIndicator();
-                        } else if (state is ReviewSuccess) {
-                          final customPaging = state.custom_paging;
-                          return Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '${customPaging.totalCount}',
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              const Row(
-                                children: [
-                                  Text(
-                                    'reviews',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              )
-                            ],
-                          );
-                        } else if (state is ReviewFailure) {
-                          return Text(state.message,
-                              style: const TextStyle(color: Colors.red));
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
+            //sua code review
+            BlocBuilder<ReviewCubit, ReviewState>(builder: (context , state) {
+              if (state is ReviewLoading) {
+                return const CircularProgressIndicator();
+              }else if (state is ReviewSuccess && startArv > 0){
+                final customPaging = state.custom_paging;
+                return  Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Column(
                           children: [
-                            Text(
-                              startArv.toString(),
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            Row(
+                              children: [
+                                Text(
+                                  '${customPaging.totalCount}',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            const Icon(
-                              Icons.star,
-                              size: 18,
-                            ),
+                            const Row(
+                              children: [
+                                Text(
+                                  'reviews',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                        const Row(
+                        const SizedBox(height: 8),
+                        Column(
                           children: [
-                            Text(
-                              "ratings",
-                              style: TextStyle(fontSize: 14),
+                            Row(
+                              children: [
+                                Text(
+                                  startArv.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 18, fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                const Icon(
+                                  Icons.star,
+                                  size: 18,
+                                ),
+                              ],
                             ),
+                            const Row(
+                              children: [
+                                Text(
+                                  "ratings",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            )
                           ],
+                        ),
+                        const SizedBox(height: 17),
+                        Text(
+                              () {
+                            final hostTime = calculateHostTime(
+                                propertyState.property.user!.createdAt);
+                            final years = hostTime['years'] ?? 0;
+                            final months = hostTime['months'] ?? 0;
+
+                            if (years > 0) {
+                              return "$years years hosting";
+                            } else if (months > 0) {
+                              return "$months months hosting";
+                            } else {
+                              return "Host new";
+                            }
+                          }(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
-                    const SizedBox(height: 17),
-                    Text(
-                      () {
-                        final hostTime = calculateHostTime(
-                            propertyState.property.user!.createdAt);
-                        final years = hostTime['years'] ?? 0;
-                        final months = hostTime['months'] ?? 0;
+                  ),
+                );
+              }else if (state is ReviewFailure) {
+                return Text(state.message,
+                    style: const TextStyle(color: Colors.red));
+              }
+              return const SizedBox.shrink();
 
-                        if (years > 0) {
-                          return "$years years hosting";
-                        } else if (months > 0) {
-                          return "$months months hosting";
-                        } else {
-                          return "Host new";
-                        }
-                      }(),
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            })
+
           ],
         ),
       ),
@@ -1514,7 +1509,8 @@ class _PropertyDetailState extends State<PropertyDetail> {
               ),
             ],
           ),
-          Container(
+            // sua code review
+          startArv > 0 ?Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1582,7 +1578,7 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 ),
               ],
             ),
-          ),
+          ):const  Text(""),
         ],
       ),
     );
