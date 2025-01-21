@@ -39,27 +39,31 @@ class _QrScannerState extends State<QrScanner> {
   TokenStorage tokenStorage = TokenStorage();
 
   void readData(String barcode) {
-    databaseRef.child(barcode).once().then((DatabaseEvent event) {
-      final data = event.snapshot.value as Map<dynamic, dynamic>;
+    try {
+      databaseRef.child(barcode).once().then((DatabaseEvent event) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>;
 
-      if (data.isNotEmpty) {
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                create: (_) => QrScannerCubit(),
-                child: QrCodeCheck(barcode),
+        if (data.isNotEmpty) {
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                  create: (_) => QrScannerCubit(),
+                  child: QrCodeCheck(barcode),
+                ),
               ),
-            ),
-          ).then((_) {
-            if (mounted) {
-              Navigator.pop(context);
-            }
-          });
+            ).then((_) {
+              if (mounted) {
+                Navigator.pop(context);
+              }
+            });
+          }
         }
-      }
-    });
+      });
+    } catch (ex) {
+      print(ex.toString());
+    }
   }
 
   @override

@@ -1,3 +1,5 @@
+
+
 {
   "project_info": {
     "project_number": "584774992278",
@@ -14,6 +16,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "584774992278-n4da35707ocqmflccrf1jg7p25a5bvav.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.project4_flutter",
+            "certificate_hash": "d4f8ec12bbba81c5e592355296648ea660db2dd6"
+          }
+        },
         {
           "client_id": "584774992278-29m987f8cq758nu5hvepmm3400dcvmhm.apps.googleusercontent.com",
           "client_type": 3

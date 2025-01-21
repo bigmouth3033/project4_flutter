@@ -284,18 +284,20 @@ class _PropertyDetailState extends State<PropertyDetail> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.star, size: 20),
-                          Text(
-                            startArv.toString(),
-                            style: const TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
+                      startArv > 0
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Icon(Icons.star, size: 20),
+                                Text(
+                                  startArv.toString(),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const Text(""),
                     ],
                   ),
             if (startDate != null && endDate != null)
@@ -920,100 +922,99 @@ class _PropertyDetailState extends State<PropertyDetail> {
                 ],
               ),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BlocBuilder<ReviewCubit, ReviewState>(
-                      builder: (context, state) {
-                        if (state is ReviewLoading) {
-                          return const CircularProgressIndicator();
-                        } else if (state is ReviewSuccess) {
-                          final customPaging = state.custom_paging;
-                          return Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '${customPaging.totalCount}',
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              const Row(
-                                children: [
-                                  Text(
-                                    'reviews',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              )
-                            ],
-                          );
-                        } else if (state is ReviewFailure) {
-                          return Text(state.message,
-                              style: const TextStyle(color: Colors.red));
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
+            BlocBuilder<ReviewCubit, ReviewState>(builder: (context, state) {
+              if (state is ReviewLoading) {
+                return const CircularProgressIndicator();
+              } else if (state is ReviewSuccess && startArv > 0) {
+                final customPaging = state.custom_paging;
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Column(
                           children: [
-                            Text(
-                              startArv.toString(),
-                              style: const TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            Row(
+                              children: [
+                                Text(
+                                  '${customPaging.totalCount}',
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                            const SizedBox(
-                              width: 6,
-                            ),
-                            const Icon(
-                              Icons.star,
-                              size: 18,
-                            ),
+                            const Row(
+                              children: [
+                                Text(
+                                  'reviews',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                        const Row(
+                        const SizedBox(height: 8),
+                        Column(
                           children: [
-                            Text(
-                              "ratings",
-                              style: TextStyle(fontSize: 14),
+                            Row(
+                              children: [
+                                Text(
+                                  startArv.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(
+                                  width: 6,
+                                ),
+                                const Icon(
+                                  Icons.star,
+                                  size: 18,
+                                ),
+                              ],
                             ),
+                            const Row(
+                              children: [
+                                Text(
+                                  "ratings",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            )
                           ],
+                        ),
+                        const SizedBox(height: 17),
+                        Text(
+                          () {
+                            final hostTime = calculateHostTime(
+                                propertyState.property.user!.createdAt);
+                            final years = hostTime['years'] ?? 0;
+                            final months = hostTime['months'] ?? 0;
+
+                            if (years > 0) {
+                              return "$years years hosting";
+                            } else if (months > 0) {
+                              return "$months months hosting";
+                            } else {
+                              return "Host new";
+                            }
+                          }(),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
-                    const SizedBox(height: 17),
-                    Text(
-                      () {
-                        final hostTime = calculateHostTime(
-                            propertyState.property.user!.createdAt);
-                        final years = hostTime['years'] ?? 0;
-                        final months = hostTime['months'] ?? 0;
-
-                        if (years > 0) {
-                          return "$years years hosting";
-                        } else if (months > 0) {
-                          return "$months months hosting";
-                        } else {
-                          return "Host new";
-                        }
-                      }(),
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                );
+              } else if (state is ReviewFailure) {
+                return Text(state.message,
+                    style: const TextStyle(color: Colors.red));
+              }
+              return const SizedBox.shrink();
+            })
           ],
         ),
       ),
@@ -1535,75 +1536,78 @@ class _PropertyDetailState extends State<PropertyDetail> {
               ),
             ],
           ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(Icons.star, size: 23),
-                Text(
-                  startArv.toString(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(
-                  width: 4,
-                ),
-                const Icon(Icons.circle, size: 4),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        BlocBuilder<ReviewCubit, ReviewState>(
-                          builder: (context, state) {
-                            if (state is ReviewLoading) {
-                              return const CircularProgressIndicator();
-                            } else if (state is ReviewSuccess) {
-                              final customPaging = state.custom_paging;
-                              return Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '${customPaging.totalCount}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    width: 3,
-                                  ),
-                                  const Row(
-                                    children: [
-                                      Text(
-                                        'reviews',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              );
-                            } else if (state is ReviewFailure) {
-                              return Text(state.message,
-                                  style: const TextStyle(color: Colors.red));
-                            }
-                            return const SizedBox.shrink();
-                          },
+          startArv > 0
+              ? Container(
+                  padding: const EdgeInsets.fromLTRB(0, 10, 4, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, size: 23),
+                      Text(
+                        startArv.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      const Icon(Icons.circle, size: 4),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BlocBuilder<ReviewCubit, ReviewState>(
+                                builder: (context, state) {
+                                  if (state is ReviewLoading) {
+                                    return const CircularProgressIndicator();
+                                  } else if (state is ReviewSuccess) {
+                                    final customPaging = state.custom_paging;
+                                    return Row(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '${customPaging.totalCount}',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          width: 3,
+                                        ),
+                                        const Row(
+                                          children: [
+                                            Text(
+                                              'reviews',
+                                              style: TextStyle(fontSize: 16),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  } else if (state is ReviewFailure) {
+                                    return Text(state.message,
+                                        style:
+                                            const TextStyle(color: Colors.red));
+                                  }
+                                  return const SizedBox.shrink();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                )
+              : const Text(""),
         ],
       ),
     );

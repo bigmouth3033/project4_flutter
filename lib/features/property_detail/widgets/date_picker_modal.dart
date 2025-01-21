@@ -508,18 +508,21 @@ class _DatePickerModalState extends State<DatePickerModal> {
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.star, size: 20),
-                                  Text(
-                                    startArv.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              startArv! > 0
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Icon(Icons.star, size: 20),
+                                        Text(
+                                          startArv.toString(),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const Text(""),
                             ],
                           ),
                     ElevatedButton(
