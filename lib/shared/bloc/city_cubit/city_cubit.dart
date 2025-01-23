@@ -20,6 +20,7 @@ class CityCubit extends Cubit<CityState> {
 
   void changeCity(String? ct) {
     city = ct;
+    print("hhhh"+ct.toString());
     emit(CityChangeSuccess());
   }
 

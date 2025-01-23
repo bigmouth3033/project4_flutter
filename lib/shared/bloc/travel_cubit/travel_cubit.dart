@@ -68,6 +68,7 @@ class TravelCubit extends Cubit<TravelState> {
   //fetch data => Future//fetch data => Future
   Future changeCity(String? ct) async {
     city = ct;
+    print("travel cubit chang city" +city.toString());
     currentPage = 0;
     hasMore = true;
     travelList.clear();
